@@ -1,0 +1,101 @@
+{
+  "company": {
+    "name": "StartupCo",
+    "founded": "2024"
+  },
+  "founders": {
+    "founder1": {
+      "name": "Founder 1",
+      "ownership": 49
+    },
+    "founder2": {
+      "name": "Founder 2",
+      "ownership": 51
+    }
+  },
+  "rounds": [
+    {
+      "id": "seed",
+      "name": "Seed",
+      "preMoneyValuation": 150000000,
+      "amountRaised": 10000000,
+      "postMoneyValuation": 160000000,
+      "targetDilution": 6.25,
+      "optionPoolSize": 10,
+      "optionPoolRefresh": "post-money",
+      "advisors": 1,
+      "status": "planned",
+      "capTable": {
+        "founders": 92.5,
+        "investors": 6.25,
+        "optionPool": 10,
+        "advisors": 1
+      },
+      "summary": "Raising €10M at €150M pre-money valuation. This gives investors 6.25% ownership and establishes a €160M post-money valuation. Founders retain 92.5% after accounting for the 10% option pool."
+    },
+    {
+      "id": "series-a",
+      "name": "Series A",
+      "preMoneyValuation": 300000000,
+      "amountRaised": 50000000,
+      "postMoneyValuation": 350000000,
+      "targetDilution": 14.3,
+      "optionPoolSize": 12,
+      "optionPoolRefresh": "post-money",
+      "advisors": 1.5,
+      "status": "planned",
+      "capTable": {
+        "founders": 79.3,
+        "investors": 20.7,
+        "optionPool": 12,
+        "advisors": 1.5
+      },
+      "summary": "Raising €50M at €300M pre-money valuation for 14.3% dilution. Post-money valuation reaches €350M. Founders now own 79.3% after this round and option pool refresh."
+    },
+    {
+      "id": "series-b",
+      "name": "Series B",
+      "preMoneyValuation": 750000000,
+      "amountRaised": 150000000,
+      "postMoneyValuation": 900000000,
+      "targetDilution": 16.7,
+      "optionPoolSize": 15,
+      "optionPoolRefresh": "post-money",
+      "advisors": 2,
+      "status": "planned",
+      "capTable": {
+        "founders": 66.1,
+        "investors": 37.4,
+        "optionPool": 15,
+        "advisors": 2
+      },
+      "summary": "Raising €150M at €750M pre-money valuation for 16.7% dilution. This round pushes the company to €900M post-money, approaching unicorn status. Founder ownership drops to 66.1%."
+    },
+    {
+      "id": "series-c",
+      "name": "Series C",
+      "preMoneyValuation": 1200000000,
+      "amountRaised": 250000000,
+      "postMoneyValuation": 1450000000,
+      "targetDilution": 17.2,
+      "optionPoolSize": 15,
+      "optionPoolRefresh": "post-money",
+      "advisors": 2.5,
+      "status": "planned",
+      "capTable": {
+        "founders": 54.7,
+        "investors": 54.6,
+        "optionPool": 15,
+        "advisors": 2.5
+      },
+      "summary": "Raising €250M at €1.2B pre-money valuation for 17.2% dilution. Company achieves unicorn status with €1.45B post-money valuation. Final founder ownership: 54.7%."
+    }
+  ],
+  "optionPool": {
+    "currentSize": 10,
+    "refreshStrategy": "post-money"
+  },
+  "advisors": {
+    "totalAllocation": 1
+  }
+}
