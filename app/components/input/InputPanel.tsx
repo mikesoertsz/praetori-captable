@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { FundingData, FundingRound } from "@/app/lib/types";
-import FounderInputs from "./FounderInputs";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import RoundInputs from "./RoundInputs";
 
 interface InputPanelProps {
@@ -15,24 +15,6 @@ export default function InputPanel({ data, onUpdateData }: InputPanelProps) {
 
   const selectedRound =
     data.rounds.find((round) => round.id === selectedRoundId) || null;
-
-  function handleUpdateFounder(
-    id: string,
-    field: keyof typeof data.founders.founder1,
-    value: string | number
-  ) {
-    const updatedData = {
-      ...data,
-      founders: {
-        ...data.founders,
-        [id]: {
-          ...data.founders[id],
-          [field]: value,
-        },
-      },
-    };
-    onUpdateData(updatedData);
-  }
 
   function handleUpdateRound(
     field: keyof FundingRound,
@@ -53,33 +35,29 @@ export default function InputPanel({ data, onUpdateData }: InputPanelProps) {
 
   return (
     <div className="h-full overflow-y-auto">
-      <div className="p-6 space-y-6">
-        <h2 className="text-2xl font-bold">Funding Round Planner</h2>
+      <div className="p-4 space-y-4">
+        <h2 className="text-xl font-bold">Funding Round Planner</h2>
 
-        <div>
-          <label className="block text-sm font-medium mb-2">Select Round</label>
-          <select
-            value={selectedRoundId}
-            onChange={(e) => setSelectedRoundId(e.target.value)}
-            className="w-full p-2 border"
-          >
+        <Tabs
+          value={selectedRoundId}
+          onValueChange={setSelectedRoundId}
+          className="w-full"
+        >
+          <TabsList className="grid w-full grid-cols-4">
             {data.rounds.map((round) => (
-              <option key={round.id} value={round.id}>
+              <TabsTrigger key={round.id} value={round.id}>
                 {round.name}
-              </option>
+              </TabsTrigger>
             ))}
-          </select>
-        </div>
+          </TabsList>
 
-        <FounderInputs
-          founders={data.founders}
-          onUpdateFounder={handleUpdateFounder}
-        />
-
-        <RoundInputs
-          selectedRound={selectedRound}
-          onUpdateRound={handleUpdateRound}
-        />
+          <TabsContent value={selectedRoundId} className="mt-4">
+            <RoundInputs
+              selectedRound={selectedRound}
+              onUpdateRound={handleUpdateRound}
+            />
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );

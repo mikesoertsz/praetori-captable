@@ -5,33 +5,33 @@
   },
   "founders": {
     "founder1": {
-      "name": "Founder 1",
+      "name": "Mike",
       "ownership": 49
     },
     "founder2": {
-      "name": "Founder 2",
+      "name": "Jordi",
       "ownership": 51
     }
   },
   "rounds": [
     {
       "id": "seed",
-      "name": "Seed",
-      "preMoneyValuation": 150000000,
+      "name": "SAFE",
+      "preMoneyValuation": 115000000,
       "amountRaised": 10000000,
-      "postMoneyValuation": 160000000,
-      "targetDilution": 6.25,
+      "postMoneyValuation": 125000000,
+      "targetDilution": 8.0,
       "optionPoolSize": 10,
       "optionPoolRefresh": "post-money",
       "advisors": 1,
       "status": "planned",
       "capTable": {
-        "founders": 92.5,
-        "investors": 6.25,
+        "founders": 91.0,
+        "investors": 8.0,
         "optionPool": 10,
         "advisors": 1
       },
-      "summary": "Raising €10M at €150M pre-money valuation. This gives investors 6.25% ownership and establishes a €160M post-money valuation. Founders retain 92.5% after accounting for the 10% option pool."
+      "summary": "SAFE investment of €10M for 8.0% ownership. Pre-money valuation of €115M, post-money valuation of €125M. Founders retain 91.0% after accounting for the 10% option pool."
     },
     {
       "id": "series-a",

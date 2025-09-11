@@ -11,6 +11,20 @@ export function formatCurrency(amount: number): string {
   return `€${amount.toFixed(0)}`;
 }
 
+export function formatCurrencyInput(amount: number): string {
+  return amount.toLocaleString("en-US", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  });
+}
+
+export function parseCurrencyInput(value: string): number {
+  // Remove commas and parse as number
+  const cleanValue = value.replace(/,/g, "");
+  const parsed = parseFloat(cleanValue);
+  return isNaN(parsed) ? 0 : parsed;
+}
+
 export function transformToChartData(round: FundingRound): ChartData {
   return {
     name: "Cap Table",
@@ -41,4 +55,14 @@ export function calculateFounderDilution(
   advisorAllocation: number
 ): number {
   return investorOwnership + optionPoolSize + advisorAllocation;
+}
+
+export function calculateFounderNetWorth(
+  founderOwnership: number,
+  totalFounderOwnership: number,
+  postMoneyValuation: number
+): number {
+  // Calculate the founder's share of the total founder ownership
+  const founderShare = (founderOwnership / 100) * (totalFounderOwnership / 100);
+  return founderShare * postMoneyValuation;
 }
