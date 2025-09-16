@@ -7,7 +7,6 @@ import {
   TrendingDown,
   Users,
   DollarSign,
-  Percent,
   Target,
 } from "lucide-react";
 import OwnershipChart from "./OwnershipChart";
@@ -41,17 +40,14 @@ export default function RoundListItem({
     : 0;
 
   // Calculate total founder net worth
-  const totalFounderNetWorth = Object.entries(founders).reduce(
-    (total, [key, founder]) => {
-      const netWorth = calculateFounderNetWorth(
-        founder.ownership,
-        round.capTable.founders,
-        round.postMoneyValuation
-      );
-      return total + netWorth;
-    },
-    0
-  );
+  Object.entries(founders).reduce((total, [, founder]) => {
+    const netWorth = calculateFounderNetWorth(
+      founder.ownership,
+      round.capTable.founders,
+      round.postMoneyValuation
+    );
+    return total + netWorth;
+  }, 0);
 
   // Calculate investor dilution from previous round
   const previousInvestorDilution = previousRound
@@ -75,17 +71,8 @@ export default function RoundListItem({
       : baseShares);
 
   // Calculate shares for each category based on their ownership percentages
-  const investorShares = Math.round(
-    (round.capTable.investors / 100) * totalShares
-  );
-  const founderShares = Math.round(
-    (round.capTable.founders / 100) * totalShares
-  );
   const optionPoolShares = Math.round(
     (round.capTable.optionPool / 100) * totalShares
-  );
-  const advisorShares = Math.round(
-    (round.capTable.advisors / 100) * totalShares
   );
 
   const getTrendIcon = (value: number) => {
@@ -396,7 +383,7 @@ export default function RoundListItem({
               </h4>
               <div className="grid grid-cols-2 gap-2">
                 {Object.entries(founders)
-                  .sort(([keyA, founderA], [keyB, founderB]) => {
+                  .sort(([, founderA], [, founderB]) => {
                     // Put Jordi first, then Mike
                     if (founderA.name === "Jordi") return -1;
                     if (founderB.name === "Jordi") return 1;

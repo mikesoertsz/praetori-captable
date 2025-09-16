@@ -1,37 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import { FundingData, FundingRound } from "@/app/lib/types";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { useFundingStore } from "@/app/store/fundingStore";
 import RoundInputs from "./RoundInputs";
 
-interface InputPanelProps {
-  data: FundingData;
-  onUpdateData: (updatedData: FundingData) => void;
-}
-
-export default function InputPanel({ data, onUpdateData }: InputPanelProps) {
-  const [selectedRoundId, setSelectedRoundId] = useState<string>("seed");
-
-  const selectedRound =
-    data.rounds.find((round) => round.id === selectedRoundId) || null;
-
-  function handleUpdateRound(
-    field: keyof FundingRound,
-    value: string | number
-  ) {
-    if (!selectedRound) return;
-
-    const updatedRounds = data.rounds.map((round) =>
-      round.id === selectedRoundId ? { ...round, [field]: value } : round
-    );
-
-    const updatedData = {
-      ...data,
-      rounds: updatedRounds,
-    };
-    onUpdateData(updatedData);
-  }
+export default function InputPanel() {
+  const { data, selectedRoundId, setSelectedRound } = useFundingStore();
 
   return (
     <div className="h-full overflow-y-auto">
@@ -40,7 +14,7 @@ export default function InputPanel({ data, onUpdateData }: InputPanelProps) {
 
         <Tabs
           value={selectedRoundId}
-          onValueChange={setSelectedRoundId}
+          onValueChange={setSelectedRound}
           className="w-full"
         >
           <TabsList className="grid w-full grid-cols-4">
@@ -52,10 +26,7 @@ export default function InputPanel({ data, onUpdateData }: InputPanelProps) {
           </TabsList>
 
           <TabsContent value={selectedRoundId} className="mt-4">
-            <RoundInputs
-              selectedRound={selectedRound}
-              onUpdateRound={handleUpdateRound}
-            />
+            <RoundInputs />
           </TabsContent>
         </Tabs>
       </div>

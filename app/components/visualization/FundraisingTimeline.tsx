@@ -1,15 +1,22 @@
 "use client";
 
-import { FundingData } from "@/app/lib/types";
 import { formatCurrency } from "@/app/lib/utils";
+import { useFundingStore } from "@/app/store/fundingStore";
 
-interface FundraisingTimelineProps {
-  data: FundingData;
-}
+export default function FundraisingTimeline() {
+  const { data } = useFundingStore();
 
-export default function FundraisingTimeline({
-  data,
-}: FundraisingTimelineProps) {
+  if (!data || !data.rounds || data.rounds.length === 0) {
+    return (
+      <div className="h-full overflow-y-auto p-6">
+        <h2 className="text-lg font-semibold text-gray-900 mb-6">
+          Fundraising Timeline
+        </h2>
+        <p>No funding rounds available.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="h-full overflow-y-auto p-6">
       <h2 className="text-lg font-semibold text-gray-900 mb-6">
@@ -109,7 +116,7 @@ export default function FundraisingTimeline({
             <span>Final Valuation:</span>
             <span className="font-medium">
               {formatCurrency(
-                data.rounds[data.rounds.length - 1].postMoneyValuation
+                data.rounds[data.rounds.length - 1]?.postMoneyValuation || 0
               )}
             </span>
           </div>
@@ -117,7 +124,9 @@ export default function FundraisingTimeline({
           <div className="flex justify-between">
             <span>Final Founder Ownership:</span>
             <span className="font-medium">
-              {data.rounds[data.rounds.length - 1].capTable.founders.toFixed(1)}
+              {data.rounds[data.rounds.length - 1]?.capTable.founders.toFixed(
+                1
+              ) || "0.0"}
               %
             </span>
           </div>

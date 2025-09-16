@@ -1,23 +1,16 @@
 "use client";
 
-import { FundingRound } from "@/app/lib/types";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { formatCurrencyInput, parseCurrencyInput } from "@/app/lib/utils";
-import {
-  calculatePostMoneyValuation,
-  calculateInvestorOwnership,
-  calculateFounderDilution,
-} from "@/app/lib/utils";
-interface RoundInputsProps {
-  selectedRound: FundingRound | null;
-  onUpdateRound: (field: keyof FundingRound, value: string | number) => void;
-}
+import { formatCurrencyInput } from "@/app/lib/utils";
+import { useFundingStore } from "@/app/store/fundingStore";
 
-export default function RoundInputs({
-  selectedRound,
-  onUpdateRound,
-}: RoundInputsProps) {
+export default function RoundInputs() {
+  const { selectedRoundId, updateRound } = useFundingStore();
+  const selectedRound = useFundingStore(
+    (state) =>
+      state.data.rounds.find((round) => round.id === selectedRoundId) || null
+  );
   if (!selectedRound) {
     return (
       <div className="space-y-3">
@@ -40,17 +33,28 @@ export default function RoundInputs({
         <Input
           id="percentage-sold"
           type="number"
-          value={selectedRound.capTable.investors}
+          value={selectedRound.capTable.investors.toFixed(1)}
           onChange={(e) => {
-            const percentageSold = parseFloat(e.target.value);
+            const percentageSold = Math.min(
+              Math.max(parseFloat(e.target.value) || 0, 0.1),
+              30
+            );
             // Calculate pre-money valuation based on percentage sold and amount raised
             const preMoneyValuation =
               (selectedRound.amountRaised * (100 - percentageSold)) /
               percentageSold;
-            onUpdateRound("preMoneyValuation", Math.round(preMoneyValuation));
+            updateRound(selectedRoundId, "capTable", {
+              ...selectedRound.capTable,
+              investors: percentageSold,
+            });
+            updateRound(
+              selectedRoundId,
+              "preMoneyValuation",
+              Math.round(preMoneyValuation)
+            );
           }}
           className="h-8 bg-white"
-          min="1"
+          min="0.1"
           max="30"
           step="0.1"
         />
@@ -66,20 +70,33 @@ export default function RoundInputs({
           </span>
           <Input
             id="amount-raised"
-            type="text"
-            value={formatCurrencyInput(selectedRound.amountRaised)}
+            type="number"
+            value={selectedRound.amountRaised / 1000000}
             onChange={(e) => {
-              const amountRaised = parseCurrencyInput(e.target.value);
+              const amountInMillions = Math.max(
+                parseFloat(e.target.value) || 0,
+                0
+              );
+              const amountRaised = Math.round(amountInMillions * 1000000);
               // Calculate pre-money valuation based on amount raised and percentage sold
               const preMoneyValuation =
                 (amountRaised * (100 - selectedRound.capTable.investors)) /
                 selectedRound.capTable.investors;
-              onUpdateRound("amountRaised", amountRaised);
-              onUpdateRound("preMoneyValuation", Math.round(preMoneyValuation));
+              updateRound(selectedRoundId, "amountRaised", amountRaised);
+              updateRound(
+                selectedRoundId,
+                "preMoneyValuation",
+                Math.round(preMoneyValuation)
+              );
             }}
             className="h-8 bg-white pl-8"
+            min="0"
+            step="1"
             placeholder="0"
           />
+          <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">
+            M
+          </span>
         </div>
       </div>
 
@@ -90,13 +107,18 @@ export default function RoundInputs({
         <Input
           id="option-pool-size"
           type="number"
-          value={selectedRound.optionPoolSize}
-          onChange={(e) =>
-            onUpdateRound("optionPoolSize", Number(e.target.value))
-          }
+          value={selectedRound.optionPoolSize.toFixed(1)}
+          onChange={(e) => {
+            const value = Math.min(
+              Math.max(parseFloat(e.target.value) || 0, 0),
+              100
+            );
+            updateRound(selectedRoundId, "optionPoolSize", value);
+          }}
           className="h-8 bg-white"
           min="0"
           max="100"
+          step="0.1"
         />
       </div>
 
@@ -107,11 +129,18 @@ export default function RoundInputs({
         <Input
           id="advisor-allocation"
           type="number"
-          value={selectedRound.advisors}
-          onChange={(e) => onUpdateRound("advisors", Number(e.target.value))}
+          value={selectedRound.advisors.toFixed(1)}
+          onChange={(e) => {
+            const value = Math.min(
+              Math.max(parseFloat(e.target.value) || 0, 0),
+              100
+            );
+            updateRound(selectedRoundId, "advisors", value);
+          }}
           className="h-8 bg-white"
           min="0"
           max="100"
+          step="0.1"
         />
       </div>
 
@@ -122,7 +151,9 @@ export default function RoundInputs({
         <select
           id="option-pool-refresh"
           value={selectedRound.optionPoolRefresh}
-          onChange={(e) => onUpdateRound("optionPoolRefresh", e.target.value)}
+          onChange={(e) =>
+            updateRound(selectedRoundId, "optionPoolRefresh", e.target.value)
+          }
           className="flex h-8 w-full rounded-md border border-input bg-white px-3 py-1 text-sm shadow-xs transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
         >
           <option value="pre-money">Pre-money</option>

@@ -1,13 +1,11 @@
 "use client";
 
-import { FundingData } from "@/app/lib/types";
 import RoundList from "./RoundList";
+import { useFundingStore } from "@/app/store/fundingStore";
 
-interface RoundVisualizationProps {
-  data: FundingData;
-}
+export default function RoundVisualization() {
+  const { data } = useFundingStore();
 
-export default function RoundVisualization({ data }: RoundVisualizationProps) {
   if (!data || !data.rounds || !data.founders) {
     return (
       <div className="h-full overflow-y-auto">
