@@ -11,7 +11,6 @@ export function useChartData(
         founders: round.capTable.founders,
         investors: round.capTable.investors,
         optionPool: round.capTable.optionPool,
-        advisors: round.capTable.advisors,
       },
     ],
   }));

@@ -1,7 +1,7 @@
 "use client";
 
 import { TrendingUp } from "lucide-react";
-import { Pie, PieChart, Cell, Tooltip, Legend } from "recharts";
+import { Pie, PieChart, Cell, Tooltip } from "recharts";
 import { getFounderColor } from "@/app/lib/utils";
 
 interface OwnershipChartProps {
@@ -36,7 +36,7 @@ export default function OwnershipChart({
       if (founderB.name === "Robin") return 1;
       return 0;
     })
-    .map(([key, founder]) => ({
+    .map(([, founder]) => ({
       category: founder.name,
       ownership: (founder.ownership / 100) * capTable.founders,
       fill: getFounderColor(founder.name),

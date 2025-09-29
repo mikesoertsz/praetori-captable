@@ -19,11 +19,7 @@ interface FundingStore {
 
 // Helper function to ensure cap table percentages never exceed 100%
 function normalizeCapTable(capTable: CapTable): CapTable {
-  const total =
-    capTable.founders +
-    capTable.investors +
-    capTable.optionPool +
-    capTable.advisors;
+  const total = capTable.founders + capTable.investors + capTable.optionPool;
 
   if (total > 100) {
     // Scale down proportionally to ensure total = 100%
@@ -32,7 +28,7 @@ function normalizeCapTable(capTable: CapTable): CapTable {
       founders: Math.round(capTable.founders * scaleFactor * 10) / 10,
       investors: Math.round(capTable.investors * scaleFactor * 10) / 10,
       optionPool: Math.round(capTable.optionPool * scaleFactor * 10) / 10,
-      advisors: Math.round(capTable.advisors * scaleFactor * 10) / 10,
+      investorGroups: capTable.investorGroups,
     };
   }
 

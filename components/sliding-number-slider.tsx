@@ -18,7 +18,6 @@ export function SlidingNumberWithSlider({
   className?: string;
 }) {
   const [value, setValue] = useState(initialValue);
-  const [width, setWidth] = useState(0);
 
   return (
     <div className="flex flex-col items-start gap-0">
