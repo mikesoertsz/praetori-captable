@@ -5,12 +5,16 @@
   },
   "founders": {
     "founder1": {
-      "name": "Mike",
-      "ownership": 49
+      "name": "Jordi",
+      "ownership": 41
     },
     "founder2": {
-      "name": "Jordi",
-      "ownership": 51
+      "name": "Mike",
+      "ownership": 39
+    },
+    "founder3": {
+      "name": "Robin",
+      "ownership": 20
     }
   },
   "rounds": [
@@ -23,79 +27,126 @@
       "targetDilution": 8.0,
       "optionPoolSize": 10,
       "optionPoolRefresh": "post-money",
-      "advisors": 1,
       "status": "planned",
       "capTable": {
-        "founders": 91.0,
+        "founders": 82.0,
         "investors": 8.0,
         "optionPool": 10,
-        "advisors": 1
+        "investorGroups": [
+          {
+            "name": "SAFE Investors",
+            "ownership": 8.0,
+            "amountInvested": 10000000
+          }
+        ]
       },
-      "summary": "SAFE investment of €10M for 8.0% ownership. Pre-money valuation of €115M, post-money valuation of €125M. Founders retain 91.0% after accounting for the 10% option pool."
+      "summary": "SAFE investment of €10M for 8.0% ownership. Pre-money valuation of €115M, post-money valuation of €125M. Founders retain 82.0% after accounting for the 10% option pool."
     },
     {
       "id": "series-a",
       "name": "Series A",
-      "preMoneyValuation": 300000000,
-      "amountRaised": 50000000,
-      "postMoneyValuation": 350000000,
-      "targetDilution": 14.3,
-      "optionPoolSize": 12,
+      "preMoneyValuation": 733333333,
+      "amountRaised": 100000000,
+      "postMoneyValuation": 833333333,
+      "targetDilution": 12.0,
+      "optionPoolSize": 10,
       "optionPoolRefresh": "post-money",
-      "advisors": 1.5,
       "status": "planned",
       "capTable": {
-        "founders": 79.3,
-        "investors": 20.7,
-        "optionPool": 12,
-        "advisors": 1.5
+        "founders": 72.16,
+        "investors": 17.84,
+        "optionPool": 10,
+        "investorGroups": [
+          {
+            "name": "SAFE Investors",
+            "ownership": 7.36,
+            "amountInvested": 10000000
+          },
+          {
+            "name": "Series A Investors",
+            "ownership": 10.48,
+            "amountInvested": 100000000
+          }
+        ]
       },
-      "summary": "Raising €50M at €300M pre-money valuation for 14.3% dilution. Post-money valuation reaches €350M. Founders now own 79.3% after this round and option pool refresh."
+      "summary": "Raising €100M at €733M pre-money valuation for 12.0% dilution. Post-money valuation reaches €833M. Founders now own 72.16% after this round and option pool refresh."
     },
     {
       "id": "series-b",
       "name": "Series B",
-      "preMoneyValuation": 750000000,
-      "amountRaised": 150000000,
-      "postMoneyValuation": 900000000,
-      "targetDilution": 16.7,
-      "optionPoolSize": 15,
+      "preMoneyValuation": 1133333333,
+      "amountRaised": 200000000,
+      "postMoneyValuation": 1333333333,
+      "targetDilution": 15.0,
+      "optionPoolSize": 10,
       "optionPoolRefresh": "post-money",
-      "advisors": 2,
       "status": "planned",
       "capTable": {
-        "founders": 66.1,
-        "investors": 37.4,
-        "optionPool": 15,
-        "advisors": 2
+        "founders": 61.34,
+        "investors": 28.66,
+        "optionPool": 10,
+        "investorGroups": [
+          {
+            "name": "SAFE Investors",
+            "ownership": 6.26,
+            "amountInvested": 10000000
+          },
+          {
+            "name": "Series A Investors",
+            "ownership": 8.91,
+            "amountInvested": 100000000
+          },
+          {
+            "name": "Series B Investors",
+            "ownership": 13.49,
+            "amountInvested": 200000000
+          }
+        ]
       },
-      "summary": "Raising €150M at €750M pre-money valuation for 16.7% dilution. This round pushes the company to €900M post-money, approaching unicorn status. Founder ownership drops to 66.1%."
+      "summary": "Raising €200M at €1.13B pre-money valuation for 15.0% dilution. This round pushes the company to €1.33B post-money, achieving unicorn status. Founder ownership drops to 61.34%."
     },
     {
       "id": "series-c",
       "name": "Series C",
-      "preMoneyValuation": 1200000000,
-      "amountRaised": 250000000,
-      "postMoneyValuation": 1450000000,
-      "targetDilution": 17.2,
-      "optionPoolSize": 15,
+      "preMoneyValuation": 1700000000,
+      "amountRaised": 300000000,
+      "postMoneyValuation": 2000000000,
+      "targetDilution": 15.0,
+      "optionPoolSize": 10,
       "optionPoolRefresh": "post-money",
-      "advisors": 2.5,
       "status": "planned",
       "capTable": {
-        "founders": 54.7,
-        "investors": 54.6,
-        "optionPool": 15,
-        "advisors": 2.5
+        "founders": 52.14,
+        "investors": 37.86,
+        "optionPool": 10,
+        "investorGroups": [
+          {
+            "name": "SAFE Investors",
+            "ownership": 5.32,
+            "amountInvested": 10000000
+          },
+          {
+            "name": "Series A Investors",
+            "ownership": 7.57,
+            "amountInvested": 100000000
+          },
+          {
+            "name": "Series B Investors",
+            "ownership": 11.47,
+            "amountInvested": 200000000
+          },
+          {
+            "name": "Series C Investors",
+            "ownership": 13.5,
+            "amountInvested": 300000000
+          }
+        ]
       },
-      "summary": "Raising €250M at €1.2B pre-money valuation for 17.2% dilution. Company achieves unicorn status with €1.45B post-money valuation. Final founder ownership: 54.7%."
+      "summary": "Raising €300M at €1.7B pre-money valuation for 15.0% dilution. Company achieves €2B post-money valuation. Final founder ownership: 52.14%."
     }
   ],
   "optionPool": {
     "currentSize": 10,
     "refreshStrategy": "post-money"
-  },
-  "advisors": {
-    "totalAllocation": 1
   }
 }

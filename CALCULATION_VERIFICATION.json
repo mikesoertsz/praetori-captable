@@ -1,0 +1,195 @@
+{
+  "calculation_breakdown": {
+    "seed_round": {
+      "round_details": {
+        "name": "SAFE",
+        "amount_raised": 10000000,
+        "percentage_sold": 8,
+        "pre_money_valuation": 115000000,
+        "post_money_valuation": 125000000,
+        "option_pool_size": 10
+      },
+      "share_calculation": {
+        "total_shares_before": 1000000,
+        "new_shares_issued": 80000,
+        "total_shares_after": 1080000,
+        "price_per_share": 125
+      },
+      "ownership_breakdown": {
+        "founders_total": 82,
+        "jordi_ownership": 33.62,
+        "mike_ownership": 31.98,
+        "robin_ownership": 16.4,
+        "investors": 8,
+        "option_pool": 10
+      },
+      "investor_groups": [
+        {
+          "name": "SAFE Investors",
+          "ownership": 8,
+          "amount_invested": 10000000,
+          "current_valuation": 10000000,
+          "return_multiple": 1.0
+        }
+      ]
+    },
+    "series_a_round": {
+      "round_details": {
+        "name": "Series A",
+        "amount_raised": 100000000,
+        "percentage_sold": 12,
+        "pre_money_valuation": 733333333,
+        "post_money_valuation": 833333333,
+        "option_pool_size": 10
+      },
+      "share_calculation": {
+        "total_shares_before": 1080000,
+        "new_shares_issued": 129600,
+        "total_shares_after": 1209600,
+        "price_per_share": 771.6
+      },
+      "ownership_breakdown": {
+        "founders_total": 72.16,
+        "jordi_ownership": 29.59,
+        "mike_ownership": 28.15,
+        "robin_ownership": 14.42,
+        "investors": 17.84,
+        "option_pool": 10
+      },
+      "investor_groups": [
+        {
+          "name": "SAFE Investors",
+          "ownership": 7.36,
+          "amount_invested": 10000000,
+          "current_valuation": 61333333,
+          "return_multiple": 6.13
+        },
+        {
+          "name": "Series A Investors",
+          "ownership": 10.48,
+          "amount_invested": 100000000,
+          "current_valuation": 87333333,
+          "return_multiple": 0.87
+        }
+      ]
+    },
+    "series_b_round": {
+      "round_details": {
+        "name": "Series B",
+        "amount_raised": 200000000,
+        "percentage_sold": 15,
+        "pre_money_valuation": 1133333333,
+        "post_money_valuation": 1333333333,
+        "option_pool_size": 10
+      },
+      "share_calculation": {
+        "total_shares_before": 1209600,
+        "new_shares_issued": 181440,
+        "total_shares_after": 1391040,
+        "price_per_share": 1102.2
+      },
+      "ownership_breakdown": {
+        "founders_total": 61.34,
+        "jordi_ownership": 25.15,
+        "mike_ownership": 23.93,
+        "robin_ownership": 12.26,
+        "investors": 28.66,
+        "option_pool": 10
+      },
+      "investor_groups": [
+        {
+          "name": "SAFE Investors",
+          "ownership": 6.26,
+          "amount_invested": 10000000,
+          "current_valuation": 83333333,
+          "return_multiple": 8.33
+        },
+        {
+          "name": "Series A Investors",
+          "ownership": 8.91,
+          "amount_invested": 100000000,
+          "current_valuation": 118666667,
+          "return_multiple": 1.19
+        },
+        {
+          "name": "Series B Investors",
+          "ownership": 13.49,
+          "amount_invested": 200000000,
+          "current_valuation": 180000000,
+          "return_multiple": 0.9
+        }
+      ]
+    },
+    "series_c_round": {
+      "round_details": {
+        "name": "Series C",
+        "amount_raised": 300000000,
+        "percentage_sold": 15,
+        "pre_money_valuation": 1700000000,
+        "post_money_valuation": 2000000000,
+        "option_pool_size": 10
+      },
+      "share_calculation": {
+        "total_shares_before": 1391040,
+        "new_shares_issued": 208656,
+        "total_shares_after": 1599696,
+        "price_per_share": 1437.5
+      },
+      "ownership_breakdown": {
+        "founders_total": 52.14,
+        "jordi_ownership": 21.38,
+        "mike_ownership": 20.34,
+        "robin_ownership": 10.42,
+        "investors": 37.86,
+        "option_pool": 10
+      },
+      "investor_groups": [
+        {
+          "name": "SAFE Investors",
+          "ownership": 5.32,
+          "amount_invested": 10000000,
+          "current_valuation": 106400000,
+          "return_multiple": 10.64
+        },
+        {
+          "name": "Series A Investors",
+          "ownership": 7.57,
+          "amount_invested": 100000000,
+          "current_valuation": 151400000,
+          "return_multiple": 1.51
+        },
+        {
+          "name": "Series B Investors",
+          "ownership": 11.47,
+          "amount_invested": 200000000,
+          "current_valuation": 229400000,
+          "return_multiple": 1.15
+        },
+        {
+          "name": "Series C Investors",
+          "ownership": 13.5,
+          "amount_invested": 300000000,
+          "current_valuation": 270000000,
+          "return_multiple": 0.9
+        }
+      ]
+    }
+  },
+  "calculation_formulas": {
+    "pre_money_valuation": "amount_raised / (percentage_sold / 100)",
+    "post_money_valuation": "pre_money_valuation + amount_raised",
+    "new_shares_issued": "total_shares_before * (percentage_sold / 100) / (1 - percentage_sold / 100)",
+    "price_per_share": "post_money_valuation / total_shares_after",
+    "founder_dilution": "previous_ownership * (1 - percentage_sold / 100)",
+    "investor_ownership": "amount_invested / post_money_valuation * 100",
+    "current_valuation": "ownership_percentage * post_money_valuation / 100",
+    "return_multiple": "current_valuation / amount_invested"
+  },
+  "verification_checks": {
+    "total_ownership_always_100": true,
+    "founders_plus_investors_plus_option_pool": "100%",
+    "share_issuance_increases_each_round": true,
+    "pre_money_plus_amount_raised_equals_post_money": true,
+    "investor_returns_calculated_correctly": true
+  }
+}

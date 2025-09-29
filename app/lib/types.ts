@@ -3,11 +3,17 @@ export interface Founder {
   ownership: number;
 }
 
+export interface InvestorGroup {
+  name: string;
+  ownership: number;
+  amountInvested: number;
+}
+
 export interface CapTable {
   founders: number;
   investors: number;
   optionPool: number;
-  advisors: number;
+  investorGroups: InvestorGroup[];
 }
 
 export interface FundingRound {
@@ -19,7 +25,6 @@ export interface FundingRound {
   targetDilution: number;
   optionPoolSize: number;
   optionPoolRefresh: "pre-money" | "post-money";
-  advisors: number;
   status: "planned" | "completed" | "in-progress";
   capTable: CapTable;
   summary: string;
@@ -35,16 +40,11 @@ export interface OptionPool {
   refreshStrategy: "pre-money" | "post-money";
 }
 
-export interface Advisors {
-  totalAllocation: number;
-}
-
 export interface FundingData {
   company: Company;
   founders: Record<string, Founder>;
   rounds: FundingRound[];
   optionPool: OptionPool;
-  advisors: Advisors;
 }
 
 export interface ChartData {
@@ -52,5 +52,4 @@ export interface ChartData {
   founders: number;
   investors: number;
   optionPool: number;
-  advisors: number;
 }

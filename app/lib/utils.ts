@@ -66,3 +66,12 @@ export function calculateFounderNetWorth(
   const founderShare = (founderOwnership / 100) * (totalFounderOwnership / 100);
   return founderShare * postMoneyValuation;
 }
+
+export function getFounderColor(founderName: string): string {
+  const colors: Record<string, string> = {
+    Jordi: "#3B82F6", // Blue
+    Mike: "#10B981", // Green
+    Robin: "#F59E0B", // Amber
+  };
+  return colors[founderName] || "#6B7280"; // Default gray
+}

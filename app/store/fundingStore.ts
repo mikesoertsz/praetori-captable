@@ -69,9 +69,6 @@ export const useFundingStore = create<FundingStore>((set, get) => ({
       currentSize: 0,
       refreshStrategy: "post-money",
     },
-    advisors: {
-      totalAllocation: 0,
-    },
   },
   selectedRoundId: "seed",
 

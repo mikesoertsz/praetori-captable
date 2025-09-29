@@ -39,19 +39,10 @@ export default function RoundInputs() {
               Math.max(parseFloat(e.target.value) || 0, 0.1),
               30
             );
-            // Calculate pre-money valuation based on percentage sold and amount raised
-            const preMoneyValuation =
-              (selectedRound.amountRaised * (100 - percentageSold)) /
-              percentageSold;
             updateRound(selectedRoundId, "capTable", {
               ...selectedRound.capTable,
               investors: percentageSold,
             });
-            updateRound(
-              selectedRoundId,
-              "preMoneyValuation",
-              Math.round(preMoneyValuation)
-            );
           }}
           className="h-8 bg-white"
           min="0.1"
@@ -78,16 +69,7 @@ export default function RoundInputs() {
                 0
               );
               const amountRaised = Math.round(amountInMillions * 1000000);
-              // Calculate pre-money valuation based on amount raised and percentage sold
-              const preMoneyValuation =
-                (amountRaised * (100 - selectedRound.capTable.investors)) /
-                selectedRound.capTable.investors;
               updateRound(selectedRoundId, "amountRaised", amountRaised);
-              updateRound(
-                selectedRoundId,
-                "preMoneyValuation",
-                Math.round(preMoneyValuation)
-              );
             }}
             className="h-8 bg-white pl-8"
             min="0"
@@ -114,28 +96,6 @@ export default function RoundInputs() {
               100
             );
             updateRound(selectedRoundId, "optionPoolSize", value);
-          }}
-          className="h-8 bg-white"
-          min="0"
-          max="100"
-          step="0.1"
-        />
-      </div>
-
-      <div className="space-y-1">
-        <Label htmlFor="advisor-allocation" className="text-sm">
-          Advisor Allocation (%)
-        </Label>
-        <Input
-          id="advisor-allocation"
-          type="number"
-          value={selectedRound.advisors.toFixed(1)}
-          onChange={(e) => {
-            const value = Math.min(
-              Math.max(parseFloat(e.target.value) || 0, 0),
-              100
-            );
-            updateRound(selectedRoundId, "advisors", value);
           }}
           className="h-8 bg-white"
           min="0"

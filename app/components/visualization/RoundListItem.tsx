@@ -1,7 +1,11 @@
 "use client";
 
 import { FundingRound, FundingData } from "@/app/lib/types";
-import { formatCurrency, calculateFounderNetWorth } from "@/app/lib/utils";
+import {
+  formatCurrency,
+  calculateFounderNetWorth,
+  getFounderColor,
+} from "@/app/lib/utils";
 import {
   TrendingUp,
   TrendingDown,
@@ -54,21 +58,18 @@ export default function RoundListItem({
     ? (previousRound.capTable.investors * (100 - round.targetDilution)) / 100
     : 0;
 
-  // Calculate share allocation properly across rounds
-  // Each round issues new shares, increasing the total share count
-  const baseShares = 1000000; // Starting shares before any funding
-
-  // Calculate total shares after this round based on post-money valuation
-  // Assuming a base price per share, total shares = post-money valuation / price per share
-  const pricePerShare = 1; // €1 per share base price
-  const totalShares = Math.round(round.postMoneyValuation / pricePerShare);
+  // Calculate total shares after this round
+  // First round starts with 1M shares, subsequent rounds calculate based on valuation
+  const firstRoundShares = 1000000; // 1 million shares for first round
+  const totalShares = previousRound
+    ? Math.round(
+        round.postMoneyValuation /
+          (previousRound.postMoneyValuation / firstRoundShares)
+      )
+    : firstRoundShares;
 
   // Calculate new shares issued in this round
-  const newSharesIssued =
-    totalShares -
-    (previousRound
-      ? Math.round(previousRound.postMoneyValuation / pricePerShare)
-      : baseShares);
+  const newSharesIssued = totalShares - (previousRound ? firstRoundShares : 0);
 
   // Calculate shares for each category based on their ownership percentages
   const optionPoolShares = Math.round(
@@ -102,77 +103,22 @@ export default function RoundListItem({
   };
 
   return (
-    <li className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
-      {/* Round Header */}
+    <div>
+      {/* Round Name Header */}
       <div className="mb-4">
-        <h3 className="text-md font-semibold text-gray-900">
+        <h3 className="text-lg font-semibold text-gray-900">
           {round.name} Round
         </h3>
-        <p className="text-xs text-gray-600 mt-1">{round.summary}</p>
-
-        {/* SAFE-specific information */}
-        {round.id === "seed" && (
-          <div className="mt-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
-            <h4 className="text-xs font-semibold text-blue-900 mb-2">
-              SAFE Details
-            </h4>
-            <div className="grid grid-cols-2 gap-2 text-xs">
-              <div>
-                <span className="text-blue-700 font-medium">
-                  Investment Amount:
-                </span>
-                <span className="text-blue-900 ml-1">
-                  {formatCurrency(round.amountRaised)}
-                </span>
-              </div>
-              <div>
-                <span className="text-blue-700 font-medium">Ownership %:</span>
-                <span className="text-blue-900 ml-1">
-                  {round.capTable.investors.toFixed(1)}%
-                </span>
-              </div>
-              <div>
-                <span className="text-blue-700 font-medium">
-                  Pre-money Valuation:
-                </span>
-                <span className="text-blue-900 ml-1">
-                  {formatCurrency(round.preMoneyValuation)}
-                </span>
-              </div>
-              <div>
-                <span className="text-blue-700 font-medium">
-                  Post-money Valuation:
-                </span>
-                <span className="text-blue-900 ml-1">
-                  {formatCurrency(round.postMoneyValuation)}
-                </span>
-              </div>
-              <div>
-                <span className="text-blue-700 font-medium">
-                  Price per Share:
-                </span>
-                <span className="text-blue-900 ml-1">
-                  €{(round.postMoneyValuation / 1000000).toFixed(2)}
-                </span>
-              </div>
-              <div>
-                <span className="text-blue-700 font-medium">
-                  Total Dilution:
-                </span>
-                <span className="text-blue-900 ml-1">
-                  {round.targetDilution.toFixed(1)}%
-                </span>
-              </div>
-            </div>
-          </div>
-        )}
+        <p className="text-sm text-gray-600">
+          Funding round details and ownership breakdown
+        </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Left side - Data Cards */}
         <div className="space-y-4">
           {/* Main Data Cards Grid */}
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             {/* Amount Raised Card - FIRST */}
             <div className="bg-white rounded-lg border border-gray-100 p-3 shadow-sm">
               <div className="flex items-center justify-between mb-2">
@@ -295,10 +241,46 @@ export default function RoundListItem({
                   : "Standard dilution level"}
               </div>
             </div>
+
+            {/* Share Allocation Card - FIFTH */}
+            <div className="bg-white rounded-lg border border-gray-100 p-3 shadow-sm">
+              <div className="flex items-center gap-2 mb-2">
+                <Users className="w-3 h-3 text-gray-400" />
+                <span className="text-xs font-medium text-gray-500">
+                  Share allocation
+                </span>
+              </div>
+              <div className="text-md font-bold text-gray-900 mb-1">
+                {totalShares.toLocaleString()} shares
+              </div>
+              <div className="text-xs text-gray-500">
+                Total: {totalShares.toLocaleString()} shares • New:{" "}
+                {newSharesIssued.toLocaleString()}
+              </div>
+            </div>
+
+            {/* Option Pool Card - SIXTH */}
+            <div className="bg-white rounded-lg border border-gray-100 p-3 shadow-sm">
+              <div className="flex items-center gap-2 mb-2">
+                <Target className="w-3 h-3 text-gray-400" />
+                <span className="text-xs font-medium text-gray-500">
+                  Option pool
+                </span>
+              </div>
+              <div className="text-md font-bold text-gray-900 mb-1">
+                {round.optionPoolSize}%
+              </div>
+              <div className="text-xs text-gray-500">
+                {optionPoolShares.toLocaleString()} shares •{" "}
+                {round.optionPoolRefresh === "pre-money"
+                  ? "Pre-money"
+                  : "Post-money"}
+              </div>
+            </div>
           </div>
 
           {/* Investor Information Row */}
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             {/* New Investor Ownership Card */}
             <div className="bg-white rounded-lg border border-gray-100 p-3 shadow-sm">
               <div className="flex items-center gap-2 mb-2">
@@ -336,42 +318,50 @@ export default function RoundListItem({
             )}
           </div>
 
-          {/* Share Allocation Row */}
-          <div className="grid grid-cols-2 gap-3">
-            {/* Share Allocation Card */}
-            <div className="bg-white rounded-lg border border-gray-100 p-3 shadow-sm">
-              <div className="flex items-center gap-2 mb-2">
-                <Users className="w-3 h-3 text-gray-400" />
-                <span className="text-xs font-medium text-gray-500">
-                  Share allocation
-                </span>
-              </div>
-              <div className="text-md font-bold text-gray-900 mb-1">
-                {totalShares.toLocaleString()} shares
-              </div>
-              <div className="text-xs text-gray-500">
-                Total: {totalShares.toLocaleString()} shares • New:{" "}
-                {newSharesIssued.toLocaleString()}
-              </div>
-            </div>
+          {/* Investor Groups Section */}
+          <div className="rounded-md bg-slate-100 p-4">
+            <h4 className="text-xs font-medium text-gray-700 mb-3">
+              {round.name} Investor Groups
+            </h4>
+            <div className="space-y-2">
+              {round.capTable.investorGroups?.map((group, index) => {
+                const currentValuation =
+                  (group.ownership * round.postMoneyValuation) / 100;
+                const returnMultiple = currentValuation / group.amountInvested;
 
-            {/* Option Pool Card */}
-            <div className="bg-white rounded-lg border border-gray-100 p-3 shadow-sm">
-              <div className="flex items-center gap-2 mb-2">
-                <Target className="w-3 h-3 text-gray-400" />
-                <span className="text-xs font-medium text-gray-500">
-                  Option pool
-                </span>
-              </div>
-              <div className="text-md font-bold text-gray-900 mb-1">
-                {round.optionPoolSize}%
-              </div>
-              <div className="text-xs text-gray-500">
-                {optionPoolShares.toLocaleString()} shares •{" "}
-                {round.optionPoolRefresh === "pre-money"
-                  ? "Pre-money"
-                  : "Post-money"}
-              </div>
+                return (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between"
+                  >
+                    <div className="flex items-center gap-2">
+                      <div
+                        className="w-2 h-2 rounded-full"
+                        style={{
+                          backgroundColor: `hsl(${240 + index * 60}, 70%, 60%)`,
+                        }}
+                      />
+                      <span className="text-xs font-medium text-gray-700">
+                        {group.name}
+                      </span>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-xs text-gray-600">
+                        {group.ownership.toFixed(1)}% •{" "}
+                        {formatCurrency(group.amountInvested)}
+                      </div>
+                      <div className="text-xs font-medium text-gray-800">
+                        {formatCurrency(currentValuation)} (
+                        {returnMultiple.toFixed(1)}x)
+                      </div>
+                    </div>
+                  </div>
+                );
+              }) || (
+                <div className="text-xs text-gray-500">
+                  No investor groups data available
+                </div>
+              )}
             </div>
           </div>
 
@@ -381,14 +371,16 @@ export default function RoundListItem({
               <h4 className="text-xs font-medium text-gray-700">
                 Individual founder net worth
               </h4>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-3 gap-2">
                 {Object.entries(founders)
                   .sort(([, founderA], [, founderB]) => {
-                    // Put Jordi first, then Mike
+                    // Put Jordi first, then Mike, then Robin
                     if (founderA.name === "Jordi") return -1;
                     if (founderB.name === "Jordi") return 1;
                     if (founderA.name === "Mike") return -1;
                     if (founderB.name === "Mike") return 1;
+                    if (founderA.name === "Robin") return -1;
+                    if (founderB.name === "Robin") return 1;
                     return 0;
                   })
                   .map(([key, founder]) => {
@@ -402,22 +394,108 @@ export default function RoundListItem({
                       (founder.ownership / 100) *
                       (round.capTable.founders / 100) *
                       100;
+
+                    // Calculate vesting based on founder and round
+                    let vestedPercentage = 0;
+                    let vestingDetails = "";
+
+                    if (round.id === "seed") {
+                      if (founder.name === "Jordi" || founder.name === "Mike") {
+                        vestedPercentage = 25; // 25% vested (1 year out of 4)
+                        vestingDetails = "1yr";
+                      } else if (founder.name === "Robin") {
+                        vestedPercentage = 4.17; // 2 months out of 48 months
+                        vestingDetails = "2mo";
+                      }
+                    } else {
+                      // For later rounds, show cumulative vesting
+                      if (founder.name === "Jordi" || founder.name === "Mike") {
+                        const yearsVested =
+                          1 +
+                          (round.id === "series-a"
+                            ? 1
+                            : round.id === "series-b"
+                            ? 2
+                            : 3);
+                        vestedPercentage = Math.min(
+                          (yearsVested / 4) * 100,
+                          100
+                        );
+                        vestingDetails = `${yearsVested}yr`;
+                      } else if (founder.name === "Robin") {
+                        const monthsVested =
+                          2 +
+                          (round.id === "series-a"
+                            ? 12
+                            : round.id === "series-b"
+                            ? 24
+                            : 36);
+                        vestedPercentage = Math.min(
+                          (monthsVested / 48) * 100,
+                          100
+                        );
+                        vestingDetails = `${monthsVested}mo`;
+                      }
+                    }
+
+                    // Calculate accessible net worth (vested portion of total net worth)
+                    const accessibleNetWorth =
+                      (netWorth * vestedPercentage) / 100;
+
+                    // Calculate ownership change from previous round
+                    const previousOwnership = previousRound
+                      ? (founder.ownership / 100) *
+                        (previousRound.capTable.founders / 100) *
+                        100
+                      : postDilutionOwnership;
+                    const ownershipChange =
+                      postDilutionOwnership - previousOwnership;
+
                     return (
                       <div
                         key={key}
                         className="bg-white rounded-lg border border-gray-100 p-3 shadow-sm"
                       >
                         <div className="flex items-center justify-between">
-                          <span className="text-xs font-medium text-gray-700">
-                            {founder.name}
-                          </span>
+                          <div className="flex items-center gap-2">
+                            <div
+                              className="w-2 h-2 rounded-full"
+                              style={{
+                                backgroundColor: getFounderColor(founder.name),
+                              }}
+                            />
+                            <span className="text-xs font-medium text-gray-700">
+                              {founder.name}
+                            </span>
+                            {previousRound && ownershipChange !== 0 && (
+                              <div
+                                className={`flex items-center gap-1 px-2 py-1 rounded-full bg-gray-100 ${getTrendColor(
+                                  ownershipChange,
+                                  true
+                                )}`}
+                              >
+                                {getTrendIcon(ownershipChange)}
+                                <span className="text-xs font-medium">
+                                  {formatPercentage(ownershipChange)}
+                                </span>
+                              </div>
+                            )}
+                          </div>
                           <span className="text-md font-semibold text-gray-900">
                             {formatCurrency(netWorth)}
                           </span>
                         </div>
                         <div className="text-xs text-gray-500 mt-1">
                           {postDilutionOwnership.toFixed(1)}% ownership
-                          (post-dilution)
+                        </div>
+                        <div className="flex justify-between items-center mt-1">
+                          <div className="text-xs text-gray-500">
+                            Vest: {vestingDetails} (
+                            {vestedPercentage.toFixed(1)}%)
+                          </div>
+                          <div className="text-xs font-medium text-gray-800">
+                            {formatCurrency(accessibleNetWorth)} accessible
+                          </div>
                         </div>
                       </div>
                     );
@@ -429,9 +507,13 @@ export default function RoundListItem({
 
         {/* Right side - Ownership Chart */}
         <div>
-          <OwnershipChart data={round.capTable} />
+          <OwnershipChart
+            capTable={round.capTable}
+            founders={founders}
+            roundName={round.name}
+          />
         </div>
       </div>
-    </li>
+    </div>
   );
 }

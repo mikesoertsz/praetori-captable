@@ -10,9 +10,8 @@ export function calculateRoundMetrics(
   // Calculate investor ownership percentage based on amount raised vs post-money valuation
   const investorOwnership = (round.amountRaised / postMoneyValuation) * 100;
 
-  // Calculate total dilution (investor ownership + option pool + advisors)
-  const totalDilution =
-    investorOwnership + round.optionPoolSize + round.advisors;
+  // Calculate total dilution (investor ownership + option pool)
+  const totalDilution = investorOwnership + round.optionPoolSize;
 
   // Calculate remaining founder ownership (must be 100% - total dilution)
   const remainingFounderOwnership = 100 - totalDilution;
@@ -27,20 +26,18 @@ export function calculateRoundMetrics(
     finalCapTable = {
       founders: Math.max(
         0,
-        100 -
-          (investorOwnership + round.optionPoolSize + round.advisors) *
-            scaleFactor
+        100 - (investorOwnership + round.optionPoolSize) * scaleFactor
       ),
       investors: investorOwnership * scaleFactor,
       optionPool: round.optionPoolSize * scaleFactor,
-      advisors: round.advisors * scaleFactor,
+      investorGroups: round.capTable.investorGroups || [], // Preserve investor groups
     };
   } else {
     finalCapTable = {
       founders: finalFounderOwnership,
       investors: investorOwnership,
       optionPool: round.optionPoolSize,
-      advisors: round.advisors,
+      investorGroups: round.capTable.investorGroups || [], // Preserve investor groups
     };
   }
 
