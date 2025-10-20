@@ -1,9 +1,6 @@
 import { FundingRound, CapTable } from "./types";
 
-export function calculateRoundMetrics(
-  round: FundingRound,
-  _previousRound?: FundingRound
-): FundingRound {
+export function calculateRoundMetrics(round: FundingRound): FundingRound {
   // Calculate post-money valuation
   const postMoneyValuation = round.preMoneyValuation + round.amountRaised;
 

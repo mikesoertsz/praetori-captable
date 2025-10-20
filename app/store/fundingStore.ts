@@ -126,12 +126,8 @@ export const useFundingStore = create<FundingStore>((set, get) => ({
       });
 
       // Recalculate all subsequent rounds to maintain consistency
-      const recalculatedRounds = updatedRounds.map((round, index) => {
-        if (index === 0) return round;
-
-        // Recalculate based on previous round's post-money valuation
-        const previousRound = updatedRounds[index - 1];
-        return calculateRoundMetrics(round, previousRound);
+      const recalculatedRounds = updatedRounds.map((round) => {
+        return calculateRoundMetrics(round);
       });
 
       return {
@@ -158,11 +154,8 @@ export const useFundingStore = create<FundingStore>((set, get) => ({
 
   recalculateAllRounds: () => {
     set((state) => {
-      const recalculatedRounds = state.data.rounds.map((round, index) => {
-        if (index === 0) return calculateRoundMetrics(round);
-
-        const previousRound = state.data.rounds[index - 1];
-        return calculateRoundMetrics(round, previousRound);
+      const recalculatedRounds = state.data.rounds.map((round) => {
+        return calculateRoundMetrics(round);
       });
 
       return {
