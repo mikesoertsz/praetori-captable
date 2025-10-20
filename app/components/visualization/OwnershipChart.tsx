@@ -1,8 +1,7 @@
 "use client";
 
-import { TrendingUp } from "lucide-react";
-import { Pie, PieChart, Cell, Tooltip } from "recharts";
 import { getFounderColor } from "@/app/lib/utils";
+import { Cell, Pie, PieChart, Tooltip } from "recharts";
 
 interface OwnershipChartProps {
   capTable: {
@@ -160,7 +159,8 @@ export default function OwnershipChart({
                   />
                   <span className="text-xs text-gray-700">
                     {entry.category.charAt(0).toUpperCase() +
-                      entry.category.slice(1)}
+                      entry.category.slice(1)}{" "}
+                    - {entry.ownership.toFixed(1)}%
                   </span>
                 </div>
               ))}
@@ -201,14 +201,20 @@ export default function OwnershipChart({
                   className="w-3 h-3 rounded-full"
                   style={{ backgroundColor: "#10B981" }}
                 />
-                <span className="text-xs text-gray-700">Founders</span>
+                <span className="text-xs text-gray-700">
+                  Founders - {capTable.founders.toFixed(1)}%
+                </span>
               </div>
               <div className="flex items-center gap-2">
                 <div
                   className="w-3 h-3 rounded-full"
                   style={{ backgroundColor: "#6B7280" }}
                 />
-                <span className="text-xs text-gray-700">Others</span>
+                <span className="text-xs text-gray-700">
+                  Others -{" "}
+                  {(capTable.investors + (capTable.optionPool || 0)).toFixed(1)}
+                  %
+                </span>
               </div>
             </div>
             <div className="relative">
