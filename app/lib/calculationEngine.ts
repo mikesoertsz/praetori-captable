@@ -7,44 +7,29 @@ export function calculateRoundMetrics(
   // Calculate post-money valuation
   const postMoneyValuation = round.preMoneyValuation + round.amountRaised;
 
-  // Calculate investor ownership percentage based on amount raised vs post-money valuation
-  const investorOwnership = (round.amountRaised / postMoneyValuation) * 100;
+  // Preserve provided cap table and target dilution from data to reflect scenario inputs
+  const providedInvestors = round.capTable?.investors ?? 0;
+  const providedFounders = round.capTable?.founders ?? 0;
+  const providedOptionPool = round.capTable?.optionPool ?? round.optionPoolSize;
 
-  // Calculate total dilution (investor ownership + option pool)
-  const totalDilution = investorOwnership + round.optionPoolSize;
+  // Normalize to ensure totals equal 100%
+  const totalProvided =
+    providedFounders + providedInvestors + providedOptionPool;
+  const scale = totalProvided > 0 ? 100 / totalProvided : 1;
 
-  // Calculate remaining founder ownership (must be 100% - total dilution)
-  const remainingFounderOwnership = 100 - totalDilution;
+  const finalCapTable: CapTable = {
+    founders: Math.max(0, providedFounders * scale),
+    investors: Math.max(0, providedInvestors * scale),
+    optionPool: Math.max(0, providedOptionPool * scale),
+    investorGroups: round.capTable?.investorGroups || [],
+  };
 
-  // Ensure founder ownership is never negative
-  const finalFounderOwnership = Math.max(0, remainingFounderOwnership);
-
-  // If total exceeds 100%, scale down proportionally
-  let finalCapTable: CapTable;
-  if (totalDilution > 100) {
-    const scaleFactor = 100 / totalDilution;
-    finalCapTable = {
-      founders: Math.max(
-        0,
-        100 - (investorOwnership + round.optionPoolSize) * scaleFactor
-      ),
-      investors: investorOwnership * scaleFactor,
-      optionPool: round.optionPoolSize * scaleFactor,
-      investorGroups: round.capTable.investorGroups || [], // Preserve investor groups
-    };
-  } else {
-    finalCapTable = {
-      founders: finalFounderOwnership,
-      investors: investorOwnership,
-      optionPool: round.optionPoolSize,
-      investorGroups: round.capTable.investorGroups || [], // Preserve investor groups
-    };
-  }
+  const targetDilution = round.targetDilution ?? finalCapTable.investors;
 
   return {
     ...round,
     postMoneyValuation,
-    targetDilution: investorOwnership, // Target dilution is just the investor ownership
+    targetDilution,
     capTable: finalCapTable,
   };
 }

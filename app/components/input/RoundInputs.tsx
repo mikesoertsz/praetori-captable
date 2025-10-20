@@ -1,9 +1,38 @@
 "use client";
 
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
+import { Label } from "../ui/label";
+import { Input } from "../ui/input";
 import { formatCurrencyInput } from "@/app/lib/utils";
 import { useFundingStore } from "@/app/store/fundingStore";
+import { FundingRound } from "@/app/lib/types";
+
+const CALCULATED_FIELDS = [
+  {
+    label: "Post-money valuation",
+    value: (selectedRound: FundingRound) =>
+      `€${formatCurrencyInput(selectedRound.postMoneyValuation)}`,
+  },
+  {
+    label: "Total dilution",
+    value: (selectedRound: FundingRound) =>
+      `${selectedRound.targetDilution.toFixed(1)}%`,
+  },
+  {
+    label: "Investor ownership",
+    value: (selectedRound: FundingRound) =>
+      `${selectedRound.capTable.investors.toFixed(1)}%`,
+  },
+  {
+    label: "Founder ownership (after dilution)",
+    value: (selectedRound: FundingRound) =>
+      `${selectedRound.capTable.founders.toFixed(1)}%`,
+  },
+  {
+    label: "Price per share (implied)",
+    value: (selectedRound: FundingRound) =>
+      `€${(selectedRound.postMoneyValuation / 1000000).toFixed(2)}`,
+  },
+];
 
 export default function RoundInputs() {
   const { selectedRoundId, updateRound } = useFundingStore();
@@ -34,7 +63,7 @@ export default function RoundInputs() {
           id="percentage-sold"
           type="number"
           value={selectedRound.capTable.investors.toFixed(1)}
-          onChange={(e) => {
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
             const percentageSold = Math.min(
               Math.max(parseFloat(e.target.value) || 0, 0.1),
               30
@@ -63,7 +92,7 @@ export default function RoundInputs() {
             id="amount-raised"
             type="number"
             value={selectedRound.amountRaised / 1000000}
-            onChange={(e) => {
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               const amountInMillions = Math.max(
                 parseFloat(e.target.value) || 0,
                 0
@@ -90,7 +119,7 @@ export default function RoundInputs() {
           id="option-pool-size"
           type="number"
           value={selectedRound.optionPoolSize.toFixed(1)}
-          onChange={(e) => {
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
             const value = Math.min(
               Math.max(parseFloat(e.target.value) || 0, 0),
               100
@@ -122,49 +151,22 @@ export default function RoundInputs() {
       </div>
 
       {/* Calculated fields - Available for All Rounds */}
-      <div className="space-y-1">
-        <Label className="text-sm font-medium text-gray-700">
-          Post-money Valuation
-        </Label>
-        <div className="h-8 w-full rounded-md border border-input bg-gray-50 px-3 py-1 text-sm flex items-center">
-          {formatCurrencyInput(selectedRound.postMoneyValuation)}
-        </div>
-      </div>
-
-      <div className="space-y-1">
-        <Label className="text-sm font-medium text-gray-700">
-          Total Dilution
-        </Label>
-        <div className="h-8 w-full rounded-md border border-input bg-gray-50 px-3 py-1 text-sm flex items-center">
-          {selectedRound.targetDilution.toFixed(1)}%
-        </div>
-      </div>
-
-      <div className="space-y-1">
-        <Label className="text-sm font-medium text-gray-700">
-          Investor Ownership
-        </Label>
-        <div className="h-8 w-full rounded-md border border-input bg-gray-50 px-3 py-1 text-sm flex items-center">
-          {selectedRound.capTable.investors.toFixed(1)}%
-        </div>
-      </div>
-
-      <div className="space-y-1">
-        <Label className="text-sm font-medium text-gray-700">
-          Founder Ownership (After Dilution)
-        </Label>
-        <div className="h-8 w-full rounded-md border border-input bg-gray-50 px-3 py-1 text-sm flex items-center">
-          {selectedRound.capTable.founders.toFixed(1)}%
-        </div>
-      </div>
-
-      <div className="space-y-1">
-        <Label className="text-sm font-medium text-gray-700">
-          Price per Share (Implied)
-        </Label>
-        <div className="h-8 w-full rounded-md border border-input bg-gray-50 px-3 py-1 text-sm flex items-center">
-          €{(selectedRound.postMoneyValuation / 1000000).toFixed(2)}
-        </div>
+      <div className="bg-white rounded-md p-4 border shadow-sm">
+        <h4 className="text-xs mb-4 font-semibold text-gray-900">
+          {selectedRound.name}
+        </h4>
+        <ul className="grid grid-cols-2 gap-4 ">
+          {CALCULATED_FIELDS.map((field, index) => (
+            <li key={index} className="text-left">
+              <div className="text-xl font-semibold text-gray-900">
+                {field.value(selectedRound)}
+              </div>
+              <div className="text-[11px] font-semibold text-indigo-500 uppercase tracking-tight">
+                {field.label}
+              </div>
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   );

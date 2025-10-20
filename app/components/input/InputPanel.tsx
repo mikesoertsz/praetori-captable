@@ -1,6 +1,6 @@
 "use client";
 
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "../ui/tabs";
 import { useFundingStore } from "@/app/store/fundingStore";
 import RoundInputs from "./RoundInputs";
 

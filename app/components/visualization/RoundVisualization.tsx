@@ -6,8 +6,8 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion";
-import { Button } from "@/components/ui/button";
+} from "../ui/accordion";
+import { Button } from "../ui/button";
 import { ChevronDown, ChevronUp, TrendingUp, TrendingDown } from "lucide-react";
 import RoundListItem from "./RoundListItem";
 import { useFundingStore } from "@/app/store/fundingStore";
@@ -85,6 +85,7 @@ export default function RoundVisualization() {
           type="multiple"
           value={openItems}
           onValueChange={setOpenItems}
+          className="w-full -space-y-px"
         >
           {data.rounds.map((round, index) => {
             const previousRound =
@@ -96,8 +97,12 @@ export default function RoundVisualization() {
               : 0;
 
             return (
-              <AccordionItem key={round.id} value={round.id}>
-                <AccordionTrigger className="flex items-center gap-2">
+              <AccordionItem
+                key={round.id}
+                value={round.id}
+                className="relative border bg-background px-4 py-1 outline-none first:rounded-t-md last:rounded-b-md last:border-b has-focus-visible:z-10 has-focus-visible:border-ring has-focus-visible:ring-[3px] has-focus-visible:ring-ring/50"
+              >
+                <AccordionTrigger className="justify-start gap-3 rounded-md py-2 text-[15px] leading-6 outline-none hover:no-underline focus-visible:ring-0 [&>svg]:-order-1">
                   <span>{round.name}</span>
                   {previousRound && valuationChange !== 0 && (
                     <div
@@ -112,7 +117,7 @@ export default function RoundVisualization() {
                     </div>
                   )}
                 </AccordionTrigger>
-                <AccordionContent className="bg-slate-50 border-slate-100 rounded-xl p-4">
+                <AccordionContent className="ps-7 pb-2 text-muted-foreground">
                   <RoundListItem
                     round={round}
                     founders={data.founders}
