@@ -39,7 +39,7 @@ export default function Home() {
         </div>
 
         {/* Middle Column - Round Visualization */}
-        <div className="flex-1 bg-white overflow-y-auto scrollbar-hide">
+        <div className="flex-1 bg-slate-100 overflow-y-auto scrollbar-hide">
           <RoundVisualization />
         </div>
       </div>

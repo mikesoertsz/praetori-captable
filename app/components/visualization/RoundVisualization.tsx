@@ -59,7 +59,7 @@ export default function RoundVisualization() {
   return (
     <div className="h-full overflow-y-auto">
       <div className="p-6">
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex justify-between items-center mb-2">
           <h2 className="text-2xl font-bold">Funding Rounds</h2>
           <Button
             variant="outline"
@@ -85,7 +85,7 @@ export default function RoundVisualization() {
           type="multiple"
           value={openItems}
           onValueChange={setOpenItems}
-          className="w-full -space-y-px"
+          className="w-full -space-y-px shadow-md"
         >
           {data.rounds.map((round, index) => {
             const previousRound =

@@ -50,6 +50,26 @@ export default function OwnershipChart({
       fill: `hsl(${240 + index * 60}, 70%, 60%)`, // Different shades of blue/purple
     })) || [];
 
+  // If investor groups don't add up to total investors, add a remainder bucket
+  const investorGroupsTotal = investorEntries.reduce(
+    (sum, item) => sum + item.ownership,
+    0
+  );
+  const investorsRemainder = Math.max(
+    0,
+    capTable.investors - investorGroupsTotal
+  );
+  const investorRemainderEntry =
+    investorsRemainder > 0
+      ? [
+          {
+            category: "Other Investors",
+            ownership: investorsRemainder,
+            fill: "#60A5FA", // Blue for remainder
+          },
+        ]
+      : [];
+
   // If no investor groups, create a generic "Investors" entry
   const hasInvestorGroups = investorEntries.length > 0;
   const investorEntry = hasInvestorGroups
@@ -65,6 +85,7 @@ export default function OwnershipChart({
   const chartData = [
     ...founderEntries,
     ...investorEntries,
+    ...investorRemainderEntry,
     ...investorEntry,
     {
       category: "optionPool",
@@ -119,15 +140,31 @@ export default function OwnershipChart({
   return (
     <div className="flex flex-col border rounded-lg bg-white">
       <div className="flex flex-col items-center pb-0 p-6">
-        <h3 className="text-lg font-semibold">
+        <h3 className="text-lg tracking-tight text-black">
           {roundName ? `${roundName} Cap Table` : "Cap Table"}
         </h3>
-        <p className="text-sm text-muted-foreground">Ownership Distribution</p>
       </div>
-      <div className="flex-1 pb-0 px-6">
-        <div className="flex items-center justify-center gap-8">
+      <div className="flex-1 p-6">
+        <div className="flex items-start justify-center gap-8">
           {/* Detailed Chart */}
-          <div className="flex flex-col items-center gap-4">
+          <div className="flex items-center gap-6">
+            <div className="flex flex-col gap-2">
+              {chartData.map((entry, index) => (
+                <div
+                  key={`legend-${index}`}
+                  className="flex items-center gap-2"
+                >
+                  <div
+                    className="w-3 h-3 rounded-full"
+                    style={{ backgroundColor: entry.fill }}
+                  />
+                  <span className="text-xs text-gray-700">
+                    {entry.category.charAt(0).toUpperCase() +
+                      entry.category.slice(1)}
+                  </span>
+                </div>
+              ))}
+            </div>
             <PieChart width={200} height={200}>
               <Pie
                 data={chartData}
@@ -154,27 +191,26 @@ export default function OwnershipChart({
                 }}
               />
             </PieChart>
-            <div className="flex flex-col gap-2">
-              {chartData.map((entry, index) => (
-                <div
-                  key={`legend-${index}`}
-                  className="flex items-center gap-2"
-                >
-                  <div
-                    className="w-3 h-3 rounded-full"
-                    style={{ backgroundColor: entry.fill }}
-                  />
-                  <span className="text-xs text-gray-700">
-                    {entry.category.charAt(0).toUpperCase() +
-                      entry.category.slice(1)}
-                  </span>
-                </div>
-              ))}
-            </div>
           </div>
 
           {/* Simplified Founder vs Others Chart */}
-          <div className="flex flex-col items-center gap-4">
+          <div className="flex items-center gap-6">
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center gap-2">
+                <div
+                  className="w-3 h-3 rounded-full"
+                  style={{ backgroundColor: "#10B981" }}
+                />
+                <span className="text-xs text-gray-700">Founders</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div
+                  className="w-3 h-3 rounded-full"
+                  style={{ backgroundColor: "#6B7280" }}
+                />
+                <span className="text-xs text-gray-700">Others</span>
+              </div>
+            </div>
             <div className="relative">
               <PieChart width={200} height={200}>
                 <Pie
@@ -212,34 +248,19 @@ export default function OwnershipChart({
                 </div>
               </div>
             </div>
-            <div className="flex flex-col gap-2">
-              <div className="flex items-center gap-2">
-                <div
-                  className="w-3 h-3 rounded-full"
-                  style={{ backgroundColor: "#10B981" }}
-                />
-                <span className="text-xs text-gray-700">Founders</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div
-                  className="w-3 h-3 rounded-full"
-                  style={{ backgroundColor: "#6B7280" }}
-                />
-                <span className="text-xs text-gray-700">Others</span>
-              </div>
-            </div>
           </div>
         </div>
       </div>
-      <div className="flex flex-col items-center gap-2 text-sm p-6 pt-0">
-        <div className="flex items-center gap-2 leading-none font-medium">
-          Total ownership: {totalOwnership.toFixed(1)}%{" "}
-          <TrendingUp className="h-4 w-4" />
-        </div>
-        <div className="text-muted-foreground leading-none text-center">
-          <div>Founders: {capTable.founders.toFixed(1)}%</div>
-          <div>Investors: {capTable.investors.toFixed(1)}%</div>
-          <div>Option Pool: {capTable.optionPool.toFixed(1)}%</div>
+      <div className="w-full border-t flex items-center justify-center py-4">
+        <div className="flex flex-row flex-wrap items-center justify-center gap-6 text-black">
+          <div className="flex items-center gap-2 leading-none font-medium">
+            Total ownership: {totalOwnership.toFixed(1)}%{" "}
+          </div>
+          <div className="flex items-center gap-6 leading-none">
+            <span>Founders: {capTable.founders.toFixed(1)}%</span>
+            <span>Investors: {capTable.investors.toFixed(1)}%</span>
+            <span>Option Pool: {capTable.optionPool.toFixed(1)}%</span>
+          </div>
         </div>
       </div>
     </div>
