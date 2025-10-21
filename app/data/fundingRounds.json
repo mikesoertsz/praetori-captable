@@ -34,13 +34,13 @@
         "optionPool": 10,
         "investorGroups": [
           {
-            "name": "SAFE Investors",
+            "name": "Seed Investors",
             "ownership": 8.0,
             "amountInvested": 10000000
           }
         ]
       },
-      "summary": "SAFE investment of €10M for 8.0% ownership. Pre-money valuation of €115M, post-money valuation of €125M. Founders retain 82.0% after accounting for the 10% option pool."
+      "summary": "Seed investment of €10M for 8.0% ownership. Pre-money valuation of €115M, post-money valuation of €125M. Founders retain 82.0% after accounting for the 10% option pool."
     },
     {
       "id": "series-a",
@@ -53,12 +53,12 @@
       "optionPoolRefresh": "post-money",
       "status": "planned",
       "capTable": {
-        "founders": 61.5,
-        "investors": 28.5,
+        "founders": 69.0,
+        "investors": 21.0,
         "optionPool": 10,
         "investorGroups": [
           {
-            "name": "SAFE Investors",
+            "name": "Seed Investors",
             "ownership": 6.0,
             "amountInvested": 10000000
           },
@@ -69,7 +69,7 @@
           }
         ]
       },
-      "summary": "Raising €60M at ~€340M pre-money for 15.0% dilution. Post-money valuation reaches ~€400M. Series A investors get 15.0% ownership, Seed/SAFE investors diluted to ~6.0%. Founders now own ~61.5% after this round with ESOP refreshed to 10%."
+      "summary": "Raising €60M at ~€340M pre-money for 15.0% dilution. Post-money valuation reaches ~€400M. Series A investors get 15.0% ownership, Seed investors diluted to ~6.0%. Founders now own ~69.0% after this round with ESOP refreshed to 10%."
     },
     {
       "id": "series-b",
@@ -82,12 +82,12 @@
       "optionPoolRefresh": "post-money",
       "status": "planned",
       "capTable": {
-        "founders": 40.0,
-        "investors": 50.0,
+        "founders": 51.3,
+        "investors": 38.7,
         "optionPool": 10,
         "investorGroups": [
           {
-            "name": "SAFE Investors",
+            "name": "Seed Investors",
             "ownership": 3.9,
             "amountInvested": 10000000
           },
@@ -103,7 +103,7 @@
           }
         ]
       },
-      "summary": "Raising ~€200M at ~€600M pre-money for 25.0% dilution. Post-money valuation ~€800M. Series B investors own 25.0%; Seed diluted to ~3.9% and Series A to ~9.8%. Founders own ~40.0% post-round with ESOP at 10%."
+      "summary": "Raising ~€200M at ~€600M pre-money for 25.0% dilution. Post-money valuation ~€800M. Series B investors own 25.0%; Seed diluted to ~3.9% and Series A to ~9.8%. Founders own ~51.3% post-round with ESOP at 10%."
     },
     {
       "id": "series-c",
@@ -116,12 +116,12 @@
       "optionPoolRefresh": "post-money",
       "status": "planned",
       "capTable": {
-        "founders": 30.0,
-        "investors": 60.0,
+        "founders": 46.0,
+        "investors": 44.0,
         "optionPool": 10,
         "investorGroups": [
           {
-            "name": "SAFE Investors",
+            "name": "Seed Investors",
             "ownership": 2.9,
             "amountInvested": 10000000
           },
@@ -142,7 +142,7 @@
           }
         ]
       },
-      "summary": "Raising ~€150M at ~€850M pre-money for 15.0% dilution. Post-money valuation ~€1.0B (unicorn). Series C investors own 15.0%; Seed ~2.9%, Series A ~7.3%, Series B ~18.8%. Founders own ~30.0% with ESOP at 10%."
+      "summary": "Raising ~€150M at ~€850M pre-money for 15.0% dilution. Post-money valuation ~€1.0B (unicorn). Series C investors own 15.0%; Seed ~2.9%, Series A ~7.3%, Series B ~18.8%. Founders own ~46.0% with ESOP at 10%."
     }
   ],
   "optionPool": {

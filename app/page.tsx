@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useFundingStore } from "@/app/store/fundingStore";
 import { FundingData } from "@/app/lib/types";
 import InputPanel from "./components/input/InputPanel";
@@ -9,6 +9,7 @@ import fundingData from "@/app/data/fundingRounds.json";
 
 export default function Home() {
   const { data, recalculateAllRounds } = useFundingStore();
+  const [showFounderNetWorth, setShowFounderNetWorth] = useState(false);
 
   // Initialize store with data from JSON file
   useEffect(() => {
@@ -35,12 +36,15 @@ export default function Home() {
       <div className="h-screen flex">
         {/* Left Column - Input Panel */}
         <div className="w-full max-w-[600px] border-r border-gray-200 overflow-y-auto scrollbar-hide">
-          <InputPanel />
+          <InputPanel
+            showFounderNetWorth={showFounderNetWorth}
+            setShowFounderNetWorth={setShowFounderNetWorth}
+          />
         </div>
 
         {/* Middle Column - Round Visualization */}
         <div className="flex-1 bg-slate-100 overflow-y-auto scrollbar-hide">
-          <RoundVisualization />
+          <RoundVisualization showFounderNetWorth={showFounderNetWorth} />
         </div>
       </div>
     </div>

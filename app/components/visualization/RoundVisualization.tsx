@@ -12,7 +12,13 @@ import { ChevronDown, ChevronUp, TrendingUp, TrendingDown } from "lucide-react";
 import RoundListItem from "./RoundListItem";
 import { useFundingStore } from "@/app/store/fundingStore";
 
-export default function RoundVisualization() {
+interface RoundVisualizationProps {
+  showFounderNetWorth: boolean;
+}
+
+export default function RoundVisualization({
+  showFounderNetWorth,
+}: RoundVisualizationProps) {
   const { data } = useFundingStore();
   const [openItems, setOpenItems] = useState<string[]>([]);
 
@@ -85,7 +91,7 @@ export default function RoundVisualization() {
           type="multiple"
           value={openItems}
           onValueChange={setOpenItems}
-          className="w-full -space-y-px shadow-md"
+          className="w-full -space-y-px shadow-md overflow-hidden rounded-2xl border border-gray-200"
         >
           {data.rounds.map((round, index) => {
             const previousRound =
@@ -122,6 +128,7 @@ export default function RoundVisualization() {
                     round={round}
                     founders={data.founders}
                     previousRound={previousRound}
+                    showFounderNetWorth={showFounderNetWorth}
                   />
                 </AccordionContent>
               </AccordionItem>
