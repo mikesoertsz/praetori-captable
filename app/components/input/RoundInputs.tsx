@@ -62,16 +62,13 @@ export default function RoundInputs() {
         <Input
           id="percentage-sold"
           type="number"
-          value={selectedRound.capTable.investors.toFixed(1)}
+          value={selectedRound.targetDilution.toFixed(1)}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
             const percentageSold = Math.min(
               Math.max(parseFloat(e.target.value) || 0, 0.1),
               30
             );
-            updateRound(selectedRoundId, "capTable", {
-              ...selectedRound.capTable,
-              investors: percentageSold,
-            });
+            updateRound(selectedRoundId, "targetDilution", percentageSold);
           }}
           className="h-8 bg-white"
           min="0.1"
