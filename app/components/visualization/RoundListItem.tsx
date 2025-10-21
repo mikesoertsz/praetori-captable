@@ -286,21 +286,54 @@ export default function RoundListItem({
                   (group.ownership * round.postMoneyValuation) / 100;
                 const returnMultiple = currentValuation / group.amountInvested;
 
+                // Determine badge color and styling based on return multiple
+                const getBadgeColor = (multiple: number) => {
+                  if (multiple > 1.5)
+                    return "bg-green-100 text-green-800 border-green-200";
+                  if (multiple > 1.0)
+                    return "bg-blue-100 text-blue-800 border-blue-200";
+                  if (multiple > 0.5)
+                    return "bg-yellow-100 text-yellow-800 border-yellow-200";
+                  return "bg-red-100 text-red-800 border-red-200";
+                };
+
+                const getBadgeIcon = (multiple: number) => {
+                  if (multiple > 1.0) return "↗";
+                  if (multiple === 1.0) return "→";
+                  return "↘";
+                };
+
                 return (
                   <li
                     key={index}
-                    className="flex flex-col gap-2 items-center justify-start text-left w-full border rounded-md p-4"
+                    className="flex flex-col gap-2 items-center justify-start text-left w-full border rounded-md p-4 bg-white"
                   >
-                    <div className="flex items-center justify-start text-left gap-2 w-full">
+                    <div className="flex items-center justify-between text-left gap-2 w-full">
+                      <div className="flex items-center gap-2">
+                        <div
+                          className="w-2 h-2 rounded-full"
+                          style={{
+                            backgroundColor: `hsl(${
+                              240 + index * 60
+                            }, 70%, 60%)`,
+                          }}
+                        />
+                        <span className="text-xs font-medium text-gray-700">
+                          {group.name}
+                        </span>
+                      </div>
+                      {/* Growth Badge */}
                       <div
-                        className="w-2 h-2 rounded-full"
-                        style={{
-                          backgroundColor: `hsl(${240 + index * 60}, 70%, 60%)`,
-                        }}
-                      />
-                      <span className="text-xs font-medium text-gray-700">
-                        {group.name}
-                      </span>
+                        className={`px-2 py-1 rounded-full text-xs font-medium border ${getBadgeColor(
+                          returnMultiple
+                        )}`}
+                        title={`Return multiple: ${returnMultiple.toFixed(2)}x`}
+                      >
+                        <span className="mr-1">
+                          {getBadgeIcon(returnMultiple)}
+                        </span>
+                        {returnMultiple.toFixed(1)}x
+                      </div>
                     </div>
                     <div className="text-left w-full flex flex-col gap-2">
                       <div className="text-sm font-semibold text-gray-900">
@@ -308,8 +341,7 @@ export default function RoundListItem({
                         {formatCurrency(group.amountInvested)}
                       </div>
                       <div className="text-sm font-medium text-gray-700">
-                        {formatCurrency(currentValuation)} (
-                        {returnMultiple.toFixed(1)}x)
+                        {formatCurrency(currentValuation)} current value
                       </div>
                     </div>
                   </li>

@@ -108,41 +108,41 @@
     {
       "id": "series-c",
       "name": "Series C",
-      "preMoneyValuation": 850000000,
-      "amountRaised": 150000000,
-      "postMoneyValuation": 1000000000,
-      "targetDilution": 15.0,
+      "preMoneyValuation": 1200000000,
+      "amountRaised": 300000000,
+      "postMoneyValuation": 1500000000,
+      "targetDilution": 20.0,
       "optionPoolSize": 10,
       "optionPoolRefresh": "post-money",
       "status": "planned",
       "capTable": {
-        "founders": 46.0,
-        "investors": 44.0,
+        "founders": 40.0,
+        "investors": 50.0,
         "optionPool": 10,
         "investorGroups": [
           {
             "name": "Seed Investors",
-            "ownership": 2.9,
+            "ownership": 2.4,
             "amountInvested": 10000000
           },
           {
             "name": "Series A Investors",
-            "ownership": 7.3,
+            "ownership": 6.0,
             "amountInvested": 60000000
           },
           {
             "name": "Series B Investors",
-            "ownership": 18.8,
+            "ownership": 21.6,
             "amountInvested": 200000000
           },
           {
             "name": "Series C Investors",
-            "ownership": 15.0,
-            "amountInvested": 150000000
+            "ownership": 20.0,
+            "amountInvested": 300000000
           }
         ]
       },
-      "summary": "Raising ~€150M at ~€850M pre-money for 15.0% dilution. Post-money valuation ~€1.0B (unicorn). Series C investors own 15.0%; Seed ~2.9%, Series A ~7.3%, Series B ~18.8%. Founders own ~46.0% with ESOP at 10%."
+      "summary": "Raising ~€300M at ~€1.2B pre-money for 20.0% dilution. Post-money valuation ~€1.5B. Series C investors own 20.0%; Seed ~2.4%, Series A ~6.0%, Series B ~21.6%. Founders own ~40.0% with ESOP at 10%."
     }
   ],
   "optionPool": {
