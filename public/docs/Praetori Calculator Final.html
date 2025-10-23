@@ -1,0 +1,2031 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Praetori.ai Pricing Calculator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        :root {
+            --primary-bg: #000000;
+            --secondary-bg: #1a1a1a;
+            --accent-orange: #FF6B35;
+            --accent-teal: #00CED1;
+            --text-primary: #ffffff;
+            --text-secondary: #cccccc;
+            --border-color: #333333;
+            --success-color: #10B981;
+            --warning-color: #F59E0B;
+            --error-color: #EF4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--primary-bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Video Background */
+        .video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .data-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(255, 107, 53, 0.08) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 107, 53, 0.08) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 60s linear infinite;
+            opacity: 0.4;
+        }
+
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(0, 206, 209, 0.4);
+            border-radius: 50%;
+            animation: particleFloat 45s infinite linear;
+        }
+
+        @keyframes particleFloat {
+            0% { 
+                transform: translateY(100vh) translateX(0); 
+                opacity: 0;
+            }
+            20% { opacity: 0.4; }
+            80% { opacity: 0.4; }
+            100% { 
+                transform: translateY(-100vh) translateX(50px); 
+                opacity: 0;
+            }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem 0;
+            border-bottom: 2px solid var(--accent-orange);
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--accent-orange), var(--accent-teal));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header h2 {
+            font-size: 1.5rem;
+            font-weight: 400;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+        }
+
+        /* User Manual */
+        .user-manual {
+            background: var(--secondary-bg);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .user-manual h3 {
+            color: var(--accent-orange);
+            margin-bottom: 1.5rem;
+            font-size: 1.3rem;
+        }
+
+        .manual-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .manual-step {
+            background: rgba(255, 107, 53, 0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 3px solid var(--accent-teal);
+        }
+
+        .manual-step h4 {
+            color: var(--accent-teal);
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .manual-step p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        /* Form Sections */
+        .section {
+            background: var(--secondary-bg);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .section h3 {
+            color: var(--accent-orange);
+            margin-bottom: 1.5rem;
+            font-size: 1.3rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid var(--accent-orange);
+            padding-bottom: 0.5rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            position: relative;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            background: #2a2a2a;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent-orange);
+            box-shadow: 0 0 0 2px rgba(255, 107, 53, 0.2);
+        }
+
+        .custom-field {
+            display: none;
+        }
+
+        .custom-field.show {
+            display: block;
+        }
+
+        /* Tooltip System */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            margin-left: 0.5rem;
+            cursor: help;
+        }
+
+        .tooltip::before {
+            content: '?';
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            background: var(--accent-teal);
+            color: var(--primary-bg);
+            border-radius: 50%;
+            text-align: center;
+            font-size: 12px;
+            font-weight: bold;
+            line-height: 18px;
+        }
+
+        .tooltip-content {
+            visibility: hidden;
+            opacity: 0;
+            position: absolute;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary-bg);
+            color: var(--text-primary);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--accent-orange);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            width: 350px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .tooltip:hover .tooltip-content {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .tooltip-content h4,
+        .tooltip-content h5 {
+            color: var(--accent-orange);
+            margin-bottom: 0.75rem;
+            font-size: 1.1rem;
+        }
+
+        .tooltip-content p {
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 0.75rem;
+        }
+
+        .pricing-info {
+            background: rgba(0, 206, 209, 0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 0.75rem 0;
+            border-left: 3px solid var(--accent-teal);
+        }
+
+        .pricing-info strong {
+            color: var(--accent-teal);
+        }
+
+        /* Module Selection */
+        .module-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0.75rem;
+            margin-top: 0.75rem;
+        }
+
+        .module-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: normal;
+            padding: 0.5rem;
+            background: rgba(255, 107, 53, 0.05);
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .module-item:hover {
+            background: rgba(255, 107, 53, 0.1);
+        }
+
+        .module-item input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+        }
+
+        /* Results Section */
+        .results {
+            background: var(--secondary-bg);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .results h3 {
+            color: var(--accent-orange);
+            margin-bottom: 1.5rem;
+            font-size: 1.3rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid var(--accent-orange);
+            padding-bottom: 0.5rem;
+        }
+
+        .pricing-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .pricing-card {
+            background: #2a2a2a;
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .pricing-card:hover {
+            border-color: var(--accent-orange);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 107, 53, 0.2);
+        }
+
+        .pricing-card h4 {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .pricing-card .amount {
+            color: var(--accent-orange);
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .breakdown-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 2rem;
+            background: #2a2a2a;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .breakdown-table th,
+        .breakdown-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .breakdown-table th {
+            background: var(--accent-orange);
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+        }
+
+        .breakdown-table td.amount {
+            text-align: right;
+            font-weight: 600;
+            color: var(--accent-teal);
+        }
+
+        /* VAT Section */
+        .vat-section {
+            background: #2a2a2a;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .vat-toggle {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 24px;
+            background: var(--border-color);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .toggle-switch.active {
+            background: var(--accent-orange);
+        }
+
+        .toggle-switch::before {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+        }
+
+        .toggle-switch.active::before {
+            transform: translateX(26px);
+        }
+
+        .vat-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+
+        .vat-item {
+            text-align: center;
+        }
+
+        .vat-item h5 {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            margin-bottom: 0.25rem;
+            text-transform: uppercase;
+        }
+
+        .vat-item .value {
+            color: var(--accent-teal);
+            font-weight: 600;
+        }
+
+        /* Buttons */
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: var(--accent-orange);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #e55a2b;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 107, 53, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--accent-teal);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #00b8bb;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 206, 209, 0.3);
+        }
+
+        /* Notification System */
+        .notification-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+            max-width: 400px;
+        }
+
+        .notification {
+            background: var(--secondary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transform: translateX(100%);
+            animation: slideIn 0.3s ease forwards;
+            position: relative;
+            backdrop-filter: blur(10px);
+        }
+
+        .notification.success {
+            border-left: 4px solid var(--success-color);
+        }
+
+        .notification.warning {
+            border-left: 4px solid var(--warning-color);
+        }
+
+        .notification.error {
+            border-left: 4px solid var(--error-color);
+        }
+
+        .notification.info {
+            border-left: 4px solid var(--accent-teal);
+        }
+
+        .notification-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .notification-title {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .notification-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 0;
+        }
+
+        .notification-message {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .notification-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            background: var(--accent-orange);
+            animation: progress 10s linear forwards;
+        }
+
+        @keyframes slideIn {
+            to { transform: translateX(0); }
+        }
+
+        @keyframes progress {
+            from { width: 100%; }
+            to { width: 0%; }
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .header h1 {
+                font-size: 2.2rem;
+            }
+
+            .header h2 {
+                font-size: 1.2rem;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .pricing-summary {
+                grid-template-columns: 1fr;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            .tooltip-content {
+                width: 280px;
+                left: -140px;
+                transform: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Video Background -->
+    <div class="video-background">
+        <div class="data-grid"></div>
+    </div>
+
+    <!-- Notification Container -->
+    <div class="notification-container" id="notificationContainer"></div>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Praetori</h1>
+            <h2>Pricing Calculator</h2>
+            <p>Professional defense AI solution pricing for European markets</p>
+        </div>
+
+        <!-- User Manual -->
+        <div class="user-manual">
+            <h3>Quick Start Guide</h3>
+            <div class="manual-grid">
+                <div class="manual-step">
+                    <h4>1. Client Information</h4>
+                    <p>Enter client details and project information</p>
+                </div>
+                <div class="manual-step">
+                    <h4>2. License Configuration</h4>
+                    <p>Select tier and modules based on requirements</p>
+                </div>
+                <div class="manual-step">
+                    <h4>3. Infrastructure Setup</h4>
+                    <p>Configure cores, security classification, and usage</p>
+                </div>
+                <div class="manual-step">
+                    <h4>4. Contract Terms</h4>
+                    <p>Set duration, payment terms, and renewal options</p>
+                </div>
+                <div class="manual-step">
+                    <h4>5. Review Results</h4>
+                    <p>Analyze pricing breakdown and TCV calculations</p>
+                </div>
+                <div class="manual-step">
+                    <h4>6. Generate Proposal</h4>
+                    <p>Download professional PDF quote or save data</p>
+                </div>
+            </div>
+            <p style="margin-top: 1rem; color: var(--text-secondary); font-size: 0.9rem;">
+                💡 <strong>Tip:</strong> Hover over any "?" icon for detailed pricing information and explanations.
+            </p>
+        </div>
+
+        <!-- Client Information Section -->
+        <div class="section">
+            <h3>Client Information</h3>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="clientName">
+                        Client/Prospect Organization
+                        <span class="tooltip">
+                            <div class="tooltip-content">
+                                <h4>Client Organization</h4>
+                                <p>Primary organization or government entity for this proposal. Used for NATO/MOD compliance detection and PDF generation.</p>
+                            </div>
+                        </span>
+                    </label>
+                    <input type="text" id="clientName" placeholder="e.g., Netherlands Ministry of Defence">
+                </div>
+
+                <div class="form-group">
+                    <label for="primaryContact">
+                        Primary Contact
+                        <span class="tooltip">
+                            <div class="tooltip-content">
+                                <h4>Primary Contact</h4>
+                                <p>Main point of contact including name and title for proposal documentation.</p>
+                            </div>
+                        </span>
+                    </label>
+                    <input type="text" id="primaryContact" placeholder="e.g., Col. Jan van der Berg, CIO">
+                </div>
+
+                <div class="form-group">
+                    <label for="opportunityName">
+                        Opportunity Name
+                        <span class="tooltip">
+                            <div class="tooltip-content">
+                                <h4>Opportunity Name</h4>
+                                <p>Internal opportunity or project name for tracking and CRM integration.</p>
+                            </div>
+                        </span>
+                    </label>
+                    <input type="text" id="opportunityName" placeholder="e.g., AI Command Platform Implementation">
+                </div>
+
+                <div class="form-group">
+                    <label for="region">
+                        Region/Country
+                        <span class="tooltip">
+                            <div class="tooltip-content">
+                                <h4>Deployment Region</h4>
+                                <p>Geographic location for deployment. Determines VAT rates and compliance requirements.</p>
+                            </div>
+                        </span>
+                    </label>
+                    <select id="region">
+                        <option value="">Select Region</option>
+                        <option value="Netherlands">Netherlands (21% VAT)</option>
+                        <option value="Germany">Germany (19% VAT)</option>
+                        <option value="France">France (20% VAT)</option>
+                        <option value="United Kingdom">United Kingdom (20% VAT)</option>
+                        <option value="Belgium">Belgium (21% VAT)</option>
+                        <option value="Denmark">Denmark (25% VAT)</option>
+                        <option value="Sweden">Sweden (25% VAT)</option>
+                        <option value="Norway">Norway (25% VAT)</option>
+                        <option value="Finland">Finland (24% VAT)</option>
+                        <option value="Poland">Poland (23% VAT)</option>
+                        <option value="Italy">Italy (22% VAT)</option>
+                        <option value="Spain">Spain (21% VAT)</option>
+                        <option value="Austria">Austria (20% VAT)</option>
+                        <option value="Switzerland">Switzerland (7.7% VAT)</option>
+                        <option value="custom">Custom VAT Rate</option>
+                    </select>
+                </div>
+
+                <div class="form-group custom-field" id="customVatGroup">
+                    <label for="customVat">
+                        Custom VAT Rate (%)
+                        <span class="tooltip">
+                            <div class="tooltip-content">
+                                <h4>Custom VAT Rate</h4>
+                                <p>Enter custom VAT rate for regions not listed or special circumstances.</p>
+                            </div>
+                        </span>
+                    </label>
+                    <input type="number" id="customVat" min="0" max="50" step="0.1" placeholder="e.g., 15.5">
+                </div>
+
+                <div class="form-group">
+                    <label for="projectDescription">
+                        Project Description
+                        <span class="tooltip">
+                            <div class="tooltip-content">
+                                <h4>Project Scope</h4>
+                                <p>Detailed description of the project scope, requirements, and objectives for proposal documentation.</p>
+                            </div>
+                        </span>
+                    </label>
+                    <textarea id="projectDescription" rows="3" placeholder="Describe the project scope, requirements, and objectives..."></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- License Configuration Section -->
+        <div class="section">
+            <h3>License Configuration</h3>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="tier">
+                        License Tier
+                        <span class="tooltip">
+                            <div class="tooltip-content">
+                                <h4>License Tiers</h4>
+                                <div class="pricing-info">
+                                    <strong>Team:</strong> € 200.000,- - € 500.000,- (20-50 users, 1-2 mission centres)<br>
+                                    <strong>Unit:</strong> € 600.000,- - € 1.200.000,- (50-200 users, 2-4 mission centres)<br>
+                                    <strong>Command:</strong> € 1.500.000,- - € 3.000.000,- (200-500 users, 5-10 mission centres)<br>
+                                    <strong>National:</strong> € 3.500.000,- - € 6.000.000,- (500-2,000+ users, 10+ mission centres)
+                                </div>
+                                <p>License tier determines base pricing, user capacity, and included quotas for data and AI usage.</p>
+                            </div>
+                        </span>
+                    </label>
+                    <select id="tier">
+                        <option value="">Select License Tier</option>
+                        <option value="team">Team (Tactical/Edge)</option>
+                        <option value="unit">Unit (Mission Center)</option>
+                        <option value="command">Command (HQ)</option>
+                        <option value="national">National/Coalition</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="modules">
+                        AI Modules
+                        <span class="tooltip">
+                            <div class="tooltip-content">
+                                <h4>AI Module Selection</h4>
+                                <div class="pricing-info">
+                                    <strong>Praevis:</strong> Mission Planning & Optimization (1.0x multiplier)<br>
+                                    <strong>Pensa:</strong> Intelligence & OSINT Analysis (1.0x multiplier)<br>
+                                    <strong>Procura:</strong> Logistics & Supply Chain (0.8x multiplier)<br>
+                                    <strong>Praetorium:</strong> Command & Control (0.9x multiplier)<br>
+                                    <strong>Parabellum:</strong> VR Training & Simulation (0.8x multiplier)
+                                </div>
+                                <p>Select the AI modules required for your deployment. Each module has different complexity and pricing multipliers.</p>
+                            </div>
+                        </span>
+                    </label>
+                    <div class="module-grid">
+                        <label class="module-item">
+                            <input type="checkbox" id="praevis" value="praevis">
+                            Praevis (Mission Planning)
+                        </label>
+                        <label class="module-item">
+                            <input type="checkbox" id="pensa" value="pensa">
+                            Pensa (Intel/OSINT)
+                        </label>
+                        <label class="module-item">
+                            <input type="checkbox" id="procura" value="procura">
+                            Procura (Logistics)
+                        </label>
+                        <label class="module-item">
+                            <input type="checkbox" id="praetorium" value="praetorium">
+                            Praetorium (Command & Control)
+                        </label>
+                        <label class="module-item">
+                            <input type="checkbox" id="parabellum" value="parabellum">
+                            Parabellum (VR Training)
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="pricingPosition">
+                        Pricing Position
+                        <span class="tooltip">
+                            <div class="tooltip-content">
+                                <h4>Pricing Position</h4>
+                                <p><strong>Low:</strong> Competitive pricing for price-sensitive opportunities<br>
+                                <strong>Mid:</strong> Standard market pricing for balanced proposals<br>
+                                <strong>High:</strong> Premium pricing for feature-rich or urgent deployments</p>
+                                <p>Affects all pricing components including license, compute, data, and AI usage rates.</p>
+                            </div>
+                        </span>
+                    </label>
+                    <select id="pricingPosition">
+                        <option value="">Select Pricing Position</option>
+                        <option value="low">Low (Competitive)</option>
+                        <option value="mid">Mid (Standard)</option>
+                        <option value="high">High (Premium)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Infrastructure Configuration Section -->
+        <div class="section">
+            <h3>Infrastructure Configuration</h3>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="cores">
+                        CPU Cores
+                        <span class="tooltip">
+                            <div class="tooltip-content">
+                                <h4>CPU Core Requirements</h4>
+                                <div class="pricing-info">
+                                    <strong>Team:</strong> 16-32 cores minimum<br>
+                                    <strong>Unit:</strong> 64-128 cores minimum<br>
+                                    <strong>Command:</strong> 256+ cores minimum<br>
+                                    <strong>National:</strong> 512+ cores minimum
+                                </div>
+                                <p>CPU cores determine compute capacity. Pricing varies by security classification.</p>
+                            </div>
+                        </span>
+                    </label>
+                    <select id="cores">
+                        <option value="">Select CPU Cores</option>
+                        <option value="16">16 cores</option>
+                        <option value="32">32 cores</option>
+                        <option value="64">64 cores</option>
+                        <option value="128">128 cores</option>
+                        <option value="256">256 cores</option>
+                        <option value="512">512 cores</option>
+                        <option value="1024">1024 cores</option>
+                        <option value="custom">Custom</option>
+                    </select>
+                </div>
+
+                <div class="form-group custom-field" id="customCoresGroup">
+                    <label for="customCores">
+                        Custom CPU Cores
+                        <span class="tooltip">
+                            <div class="tooltip-content">
+                                <h4>Custom Core Configuration</h4>
+                                <p>Enter custom CPU core count for specialized deployments or unique requirements.</p>
+                            </div>
+                        </span>
+                    </label>
+                    <input type="number" id="customCores" min="1" max="10000" placeholder="e.g., 384">
+                </div>
+
+                <div class="form-group">
+                    <label for="classification">
+                        Security Classification
+                        <span class="tooltip">
+                            <div class="tooltip-content">
+                                <h4>Security Classification & Setup Fees</h4>
+                                <div class="pricing-info">
+                                    <strong>Cloud - Unclassified:</strong> €2k-€3k per core, 15% setup fee<br>
+                                    <strong>Hybrid - Sovereign/Secure Cloud:</strong> €3k-€4k per core, 25% setup fee<br>
+                                    <strong>Air-gapped - Confidential/Secret:</strong> €4k-€5k per core, 40% setup fee<br>
+                                    <strong>Custom - Top Secret/Multi-agency:</strong> €4k-€5k per core, 50%+ setup fee
+                                </div>
+                                <p><strong>Setup Fee Calculation:</strong><br>
+                                Setup Fee = Original Base License Value × Setup Percentage<br>
+                                <em>Example: €1.000.000,- license × 25% = €250.000,- setup fee</em><br>
+                                <small>Note: Setup fee calculated on original license value before any discounts are applied</small></p>
+                                <p>Setup fees cover deployment complexity: basic onboarding (15%), sovereign cloud setup (25%), air-gapped infrastructure (40%), or custom multi-agency deployments (50%+) including STANAG/NISPOM compliance, network segmentation, and specialized accreditation.</p>
+                            </div>
+                        </span>
+                    </label>
+                    <select id="classification">
+                        <option value="">Select Security Classification</option>
+                        <option value="unclassified">Cloud - Unclassified (15% setup)</option>
+                        <option value="restricted">Hybrid - Sovereign/Secure Cloud (25% setup)</option>
+                        <option value="airgapped">Air-gapped - Confidential/Secret (40% setup)</option>
+                        <option value="topsecret">Custom - Top Secret/Multi-agency (50%+ setup)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="dataUsage">
+                        Monthly Data Usage (TB)
+                        <span class="tooltip">
+                            <div class="tooltip-content">
+                                <h4>Data Processing</h4>
+                                <p>Data ingestion and egress per month.</p>
+                                <div class="pricing-info">
+                                    <strong>Included Quotas:</strong><br>
+                                    Team: 2TB | Unit: 5TB<br>
+                                    Command: 15TB | National: 50TB
+                                </div>
+                                <div class="pricing-info">
+                                    <strong>Overage Rates:</strong><br>
+                                    Cloud: €80-€120/TB<br>
+                                    Classified: €150-€250/TB
+                                </div>
+                            </div>
+                        </span>
+                    </label>
+                    <select id="dataUsage">
+                        <option value="">Select Data Usage</option>
+                        <option value="1">1 TB/month</option>
+                        <option value="2">2 TB/month</option>
+                        <option value="5">5 TB/month</option>
+                        <option value="10">10 TB/month</option>
+                        <option value="15">15 TB/month</option>
+                        <option value="25">25 TB/month</option>
+                        <option value="50">50 TB/month</option>
+                        <option value="100">100 TB/month</option>
+                        <option value="custom">Custom</option>
+                    </select>
+                </div>
+
+                <div class="form-group custom-field" id="customDataGroup">
+                    <label for="customData">
+                        Custom Data Usage (TB/month)
+                        <span class="tooltip">
+                            <div class="tooltip-content">
+                                <h4>Custom Data Requirements</h4>
+                                <p>Enter custom monthly data usage for specialized requirements.</p>
+                            </div>
+                        </span>
+                    </label>
+                    <input type="number" id="customData" min="0" max="1000" step="0.1" placeholder="e.g., 75.5">
+                </div>
+
+                <div class="form-group">
+                    <label for="aiRuns">
+                        Monthly AI Token Usage (Millions)
+                        <span class="tooltip">
+                            <div class="tooltip-content">
+                                <h4>AI Token Usage</h4>
+                                <p>AI tokens consumed per month for inference, analysis, and automated operations. 1 token ≈ 0.75 words or 4 characters.</p>
+                                <div class="pricing-info">
+                                    <strong>Included Quotas:</strong><br>
+                                    Team: 1M tokens | Unit: 5M tokens<br>
+                                    Command: 20M tokens | National: 50M tokens
+                                </div>
+                                <div class="pricing-info">
+                                    <strong>Overage Rates:</strong><br>
+                                    Cloud: €10-€20 per 1M tokens<br>
+                                    Classified: €40-€50 per 1M tokens
+                                </div>
+                            </div>
+                        </span>
+                    </label>
+                    <select id="aiRuns">
+                        <option value="">Select Token Usage</option>
+                        <option value="0.5">0.5M tokens/month</option>
+                        <option value="1">1M tokens/month</option>
+                        <option value="5">5M tokens/month</option>
+                        <option value="10">10M tokens/month</option>
+                        <option value="20">20M tokens/month</option>
+                        <option value="50">50M tokens/month</option>
+                        <option value="100">100M tokens/month</option>
+                        <option value="custom">Custom</option>
+                    </select>
+                </div>
+
+                <div class="form-group custom-field" id="customAiGroup">
+                    <label for="customAi">
+                        Custom Token Usage (millions per month)
+                        <span class="tooltip">
+                            <div class="tooltip-content">
+                                <h4>Custom Token Requirements</h4>
+                                <p>Enter custom monthly AI token usage for specialized requirements. Tokens measure AI processing for all inference operations.</p>
+                            </div>
+                        </span>
+                    </label>
+                    <input type="number" id="customAi" min="0" max="1000" step="0.1" placeholder="e.g., 75.5">
+                </div>
+            </div>
+        </div>
+
+        <!-- Contract Terms Section -->
+        <div class="section">
+            <h3>Contract Terms</h3>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="contractDuration">
+                        Contract Duration
+                        <span class="tooltip">
+                            <div class="tooltip-content">
+                                <h4>Contract Duration</h4>
+                                <p>Contract length in months. Longer contracts may qualify for automatic multi-year discounts.</p>
+                                <div class="pricing-info">
+                                    <strong>Auto Discounts:</strong><br>
+                                    36+ months: 10% discount<br>
+                                    60+ months: 15% discount
+                                </div>
+                            </div>
+                        </span>
+                    </label>
+                    <select id="contractDuration">
+                        <option value="">Select Duration</option>
+                        <option value="12">12 months</option>
+                        <option value="18">18 months</option>
+                        <option value="24">24 months</option>
+                        <option value="36">36 months</option>
+                        <option value="48">48 months</option>
+                        <option value="60">60 months</option>
+                        <option value="custom">Custom</option>
+                    </select>
+                </div>
+
+                <div class="form-group custom-field" id="customDurationGroup">
+                    <label for="customDuration">
+                        Custom Duration (months)
+                        <span class="tooltip">
+                            <div class="tooltip-content">
+                                <h4>Custom Contract Duration</h4>
+                                <p>Enter custom contract duration in months for specialized agreements.</p>
+                            </div>
+                        </span>
+                    </label>
+                    <input type="number" id="customDuration" min="1" max="120" placeholder="e.g., 30">
+                </div>
+
+                <div class="form-group">
+                    <label for="startDate">
+                        Proposed Start Date
+                        <span class="tooltip">
+                            <div class="tooltip-content">
+                                <h4>Contract Start Date</h4>
+                                <p>Proposed contract start date for planning and proposal documentation.</p>
+                            </div>
+                        </span>
+                    </label>
+                    <input type="date" id="startDate">
+                </div>
+
+                <div class="form-group">
+                    <label for="validUntil">
+                        Proposal Valid Until
+                        <span class="tooltip">
+                            <div class="tooltip-content">
+                                <h4>Proposal Validity</h4>
+                                <p>Date until which this pricing proposal remains valid. Standard is 90 days for defense procurement.</p>
+                            </div>
+                        </span>
+                    </label>
+                    <input type="date" id="validUntil">
+                </div>
+
+                <div class="form-group">
+                    <label for="paymentTerms">
+                        Payment Terms
+                        <span class="tooltip">
+                            <div class="tooltip-content">
+                                <h4>Payment Terms</h4>
+                                <p>Payment schedule and terms for the contract. Annual advance is standard for government contracts.</p>
+                            </div>
+                        </span>
+                    </label>
+                    <select id="paymentTerms">
+                        <option value="">Select Payment Terms</option>
+                        <option value="Annual Advance">Annual Advance</option>
+                        <option value="Quarterly">Quarterly</option>
+                        <option value="Monthly">Monthly</option>
+                        <option value="Milestone-based">Milestone-based</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="renewalOption">
+                        Renewal Option
+                        <span class="tooltip">
+                            <div class="tooltip-content">
+                                <h4>Contract Renewal</h4>
+                                <p><strong>Automatic:</strong> Renews automatically unless 90-day notice given<br>
+                                <strong>Manual:</strong> Requires explicit renewal negotiation<br>
+                                <strong>Option:</strong> Client has option to renew at same terms</p>
+                                <p>Automatic renewal typically requires 90-day notice period for termination.</p>
+                            </div>
+                        </span>
+                    </label>
+                    <select id="renewalOption">
+                        <option value="">Select Renewal Option</option>
+                        <option value="Automatic">Automatic (90-day notice)</option>
+                        <option value="Manual">Manual Renewal</option>
+                        <option value="Option">Client Option</option>
+                        <option value="None">No Renewal</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="currency">
+                        Currency
+                        <span class="tooltip">
+                            <div class="tooltip-content">
+                                <h4>Contract Currency</h4>
+                                <p>Currency for pricing and invoicing. EUR is standard for European deployments.</p>
+                            </div>
+                        </span>
+                    </label>
+                    <select id="currency">
+                        <option value="EUR">EUR (Euro)</option>
+                        <option value="USD">USD (US Dollar)</option>
+                        <option value="GBP">GBP (British Pound)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        Enable Multi-Year Discounts
+                        <span class="tooltip">
+                            <div class="tooltip-content">
+                                <h4>Automatic Discounts</h4>
+                                <p>Enable automatic discounts for multi-year contracts. Can be disabled for competitive situations where standard pricing is preferred.</p>
+                            </div>
+                        </span>
+                    </label>
+                    <div class="vat-toggle">
+                        <div class="toggle-switch active" id="enableAutoDiscount"></div>
+                        <span id="autoDiscountLabel">Enabled</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="additionalDiscount">
+                        Additional Discount (%)
+                        <span class="tooltip">
+                            <div class="tooltip-content">
+                                <h4>Strategic Discount</h4>
+                                <p>Additional discount percentage for competitive situations, strategic accounts, or volume commitments. Maximum 50%.</p>
+                            </div>
+                        </span>
+                    </label>
+                    <select id="additionalDiscount">
+                        <option value="0">No Additional Discount</option>
+                        <option value="5">5% - Volume/Partnership</option>
+                        <option value="10">10% - Strategic Account</option>
+                        <option value="15">15% - Competitive Response</option>
+                        <option value="20">20% - Major Commitment</option>
+                        <option value="25">25% - Strategic Partnership</option>
+                        <option value="custom">Custom Discount</option>
+                    </select>
+                </div>
+
+                <div class="form-group custom-field" id="customDiscountGroup">
+                    <label for="customDiscount">
+                        Custom Discount (%)
+                        <span class="tooltip">
+                            <div class="tooltip-content">
+                                <h4>Custom Discount Rate</h4>
+                                <p>Enter custom discount percentage. Maximum 50% allowed.</p>
+                            </div>
+                        </span>
+                    </label>
+                    <input type="number" id="customDiscount" min="0" max="50" step="0.1" placeholder="e.g., 12.5">
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div class="results">
+            <h3>Pricing Results</h3>
+            
+            <div class="pricing-summary">
+                <div class="pricing-card">
+                    <h4>Year 1 Investment</h4>
+                    <div class="amount" id="year1Cost">€ 0,-</div>
+                    <p>Including setup fee</p>
+                </div>
+                <div class="pricing-card">
+                    <h4>Annual Ongoing</h4>
+                    <div class="amount" id="annualCost">€ 0,-</div>
+                    <p>Recurring annual cost</p>
+                </div>
+                <div class="pricing-card">
+                    <h4>Total Contract Value</h4>
+                    <div class="amount" id="tcv">€ 0,-</div>
+                    <p>Complete contract value</p>
+                </div>
+                <div class="pricing-card">
+                    <h4>Average Annual Value</h4>
+                    <div class="amount" id="aav">€ 0,-</div>
+                    <p>TCV divided by years</p>
+                </div>
+            </div>
+
+            <table class="breakdown-table">
+                <thead>
+                    <tr>
+                        <th>Component</th>
+                        <th>Description</th>
+                        <th>Annual Cost</th>
+                    </tr>
+                </thead>
+                <tbody id="breakdownTableBody">
+                    <!-- Breakdown rows will be populated by JavaScript -->
+                </tbody>
+            </table>
+
+            <!-- VAT Section -->
+            <div class="vat-section">
+                <h4 style="color: var(--accent-orange); margin-bottom: 1rem;">VAT Information</h4>
+                
+                <div class="vat-toggle">
+                    <div class="toggle-switch" id="showVatInclusive"></div>
+                    <span id="vatToggleLabel">Excluding VAT</span>
+                    <span style="margin-left: auto; color: var(--text-secondary);">All prices shown exclude VAT unless toggled</span>
+                </div>
+
+                <div class="vat-info">
+                    <div class="vat-item">
+                        <h5>VAT Rate</h5>
+                        <div class="value" id="vatRate">0%</div>
+                    </div>
+                    <div class="vat-item">
+                        <h5>VAT (Year 1)</h5>
+                        <div class="value" id="vatAmountYear1">€ 0,-</div>
+                    </div>
+                    <div class="vat-item">
+                        <h5>VAT (Annual)</h5>
+                        <div class="value" id="vatAmountAnnual">€ 0,-</div>
+                    </div>
+                    <div class="vat-item">
+                        <h5>VAT (Total)</h5>
+                        <div class="value" id="vatAmountTotal">€ 0,-</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="button-group">
+                <button class="btn btn-primary" onclick="generateQuote()">Generate Professional Proposal</button>
+                <button class="btn btn-secondary" onclick="saveQuote()">Save Quote Data</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize video background
+        function initVideoBackground() {
+            const background = document.querySelector('.video-background');
+            
+            // Create subtle particles
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 45 + 's';
+                particle.style.animationDuration = (Math.random() * 20 + 35) + 's';
+                background.appendChild(particle);
+            }
+        }
+
+        // Notification system
+        function showNotification(title, message, type = 'info') {
+            const container = document.getElementById('notificationContainer');
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            
+            notification.innerHTML = `
+                <div class="notification-header">
+                    <div class="notification-title">${title}</div>
+                    <button class="notification-close" onclick="this.parentElement.parentElement.remove()">×</button>
+                </div>
+                <div class="notification-message">${message}</div>
+                <div class="notification-progress"></div>
+            `;
+            
+            container.appendChild(notification);
+            
+            // Auto-remove after 10 seconds
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.remove();
+                }
+            }, 10000);
+        }
+
+        // Toggle functionality
+        function setupToggles() {
+            const autoDiscountToggle = document.getElementById('enableAutoDiscount');
+            const vatToggle = document.getElementById('showVatInclusive');
+            
+            autoDiscountToggle.addEventListener('click', function() {
+                this.classList.toggle('active');
+                const label = document.getElementById('autoDiscountLabel');
+                label.textContent = this.classList.contains('active') ? 'Enabled' : 'Disabled';
+                calculatePricing();
+            });
+            
+            vatToggle.addEventListener('click', function() {
+                this.classList.toggle('active');
+                calculatePricing();
+            });
+        }
+
+        // Custom field visibility
+        function setupCustomFields() {
+            const customFieldMappings = {
+                'region': 'customVatGroup',
+                'cores': 'customCoresGroup',
+                'dataUsage': 'customDataGroup',
+                'aiRuns': 'customAiGroup',
+                'contractDuration': 'customDurationGroup',
+                'additionalDiscount': 'customDiscountGroup'
+            };
+
+            Object.entries(customFieldMappings).forEach(([selectId, groupId]) => {
+                const select = document.getElementById(selectId);
+                const group = document.getElementById(groupId);
+                
+                if (select && group) {
+                    select.addEventListener('change', function() {
+                        if (this.value === 'custom') {
+                            group.classList.add('show');
+                        } else {
+                            group.classList.remove('show');
+                        }
+                        calculatePricing();
+                    });
+                }
+            });
+        }
+
+        // Auto-fill based on tier selection
+        function setupAutoFill() {
+            const tierSelect = document.getElementById('tier');
+            tierSelect.addEventListener('change', function() {
+                const tier = this.value;
+                if (!tier) return;
+
+                const recommendations = {
+                    team: { cores: '32', classification: 'restricted', dataUsage: '2', aiRuns: '1' },
+                    unit: { cores: '128', classification: 'restricted', dataUsage: '5', aiRuns: '5' },
+                    command: { cores: '256', classification: 'airgapped', dataUsage: '15', aiRuns: '20' },
+                    national: { cores: '512', classification: 'airgapped', dataUsage: '50', aiRuns: '50' }
+                };
+
+                const rec = recommendations[tier];
+                if (rec) {
+                    // Auto-fill the form fields
+                    document.getElementById('cores').value = rec.cores;
+                    document.getElementById('classification').value = rec.classification;
+                    document.getElementById('dataUsage').value = rec.dataUsage;
+                    document.getElementById('aiRuns').value = rec.aiRuns;
+                    
+                    // Show notification about what was auto-filled
+                    showNotification('Configuration Auto-Filled', 
+                        `Auto-filled: ${rec.cores} cores, ${rec.classification} security, ${rec.dataUsage}TB data, ${rec.aiRuns}M tokens`, 
+                        'info');
+                }
+                
+                calculatePricing();
+            });
+        }
+
+        // NATO/MOD client detection
+        function detectNATOMOD(clientName) {
+            const natoKeywords = [
+                'nato', 'ministry', 'defence', 'defense', 'military', 'army', 'navy', 'air force',
+                'mod', 'dod', 'bundeswehr', 'ministerie', 'defensie', 'försvarsmakten',
+                'forsvaret', 'puolustusvoimat', 'siły zbrojne', 'esercito', 'ejército'
+            ];
+            
+            return natoKeywords.some(keyword => 
+                clientName.toLowerCase().includes(keyword)
+            );
+        }
+
+        // VAT rate calculation
+        function getVATRate() {
+            const region = document.getElementById('region').value;
+            const customVat = parseFloat(document.getElementById('customVat').value) || 0;
+            
+            if (region === 'custom') return customVat;
+            
+            const vatRates = {
+                'Netherlands': 21, 'Germany': 19, 'France': 20, 'United Kingdom': 20,
+                'Belgium': 21, 'Denmark': 25, 'Sweden': 25, 'Norway': 25,
+                'Finland': 24, 'Poland': 23, 'Italy': 22, 'Spain': 21,
+                'Austria': 20, 'Switzerland': 7.7
+            };
+            
+            return vatRates[region] || 0;
+        }
+
+        // European number formatting
+        function formatEuropean(amount) {
+            return Math.round(amount).toLocaleString('de-DE') + ',-';
+        }
+
+        // Main pricing calculation
+        function calculatePricing() {
+            try {
+                // Get form values
+                const tier = document.getElementById('tier').value;
+                const pricingPosition = document.getElementById('pricingPosition').value;
+                const classification = document.getElementById('classification').value;
+                const duration = parseInt(document.getElementById('contractDuration').value === 'custom' ? 
+                    document.getElementById('customDuration').value : document.getElementById('contractDuration').value) || 12;
+                const additionalDiscount = parseFloat(document.getElementById('additionalDiscount').value === 'custom' ? 
+                    document.getElementById('customDiscount').value : document.getElementById('additionalDiscount').value) || 0;
+                const enableAutoDiscount = document.getElementById('enableAutoDiscount').classList.contains('active');
+
+                // Get infrastructure values
+                const coresValue = document.getElementById('cores').value === 'custom' ? 
+                    document.getElementById('customCores').value : document.getElementById('cores').value;
+                const cores = parseInt(coresValue) || 0;
+                
+                const dataValue = document.getElementById('dataUsage').value === 'custom' ? 
+                    document.getElementById('customData').value : document.getElementById('dataUsage').value;
+                const dataUsage = parseFloat(dataValue) || 0;
+                
+                const aiValue = document.getElementById('aiRuns').value === 'custom' ? 
+                    document.getElementById('customAi').value : document.getElementById('aiRuns').value;
+                const aiRuns = parseInt(aiValue) || 0;
+
+                // Get selected modules
+                const modules = [];
+                ['praevis', 'pensa', 'procura', 'praetorium', 'parabellum'].forEach(module => {
+                    if (document.getElementById(module).checked) {
+                        modules.push(module);
+                    }
+                });
+
+                if (!tier || !pricingPosition || !classification || modules.length === 0) {
+                    return; // Don't calculate if required fields are missing
+                }
+
+                // Pricing tiers
+                const tierPricing = {
+                    team: { min: 200000, max: 500000 },
+                    unit: { min: 600000, max: 1200000 },
+                    command: { min: 1500000, max: 3000000 },
+                    national: { min: 3500000, max: 6000000 }
+                };
+
+                // Module multipliers
+                const moduleMultipliers = {
+                    praevis: 1.0,
+                    pensa: 1.0,
+                    procura: 0.8,
+                    praetorium: 0.9,
+                    parabellum: 0.8
+                };
+
+                // Pricing position multipliers
+                const positionMultiplier = {
+                    low: 0,
+                    mid: 0.5,
+                    high: 1
+                };
+
+                // Base license calculation
+                const baseRange = tierPricing[tier];
+                const basePrice = baseRange.min + (baseRange.max - baseRange.min) * positionMultiplier[pricingPosition];
+                
+                let baseLicense = 0;
+                modules.forEach(module => {
+                    baseLicense += basePrice * moduleMultipliers[module];
+                });
+
+                // Elastic compute pricing
+                const corePricing = {
+                    unclassified: { min: 2000, max: 3000 },
+                    restricted: { min: 3000, max: 4000 },
+                    airgapped: { min: 4000, max: 5000 },
+                    topsecret: { min: 4000, max: 5000 }
+                };
+
+                const coreRange = corePricing[classification];
+                const corePrice = coreRange.min + (coreRange.max - coreRange.min) * positionMultiplier[pricingPosition];
+                const elasticCompute = cores * corePrice;
+
+                // Data usage fees
+                const dataQuotas = { team: 2, unit: 5, command: 15, national: 50 };
+                const quota = dataQuotas[tier] || 0;
+                const overage = Math.max(0, dataUsage - quota);
+                
+                const dataOverageRates = {
+                    unclassified: { min: 80, max: 120 },
+                    restricted: { min: 150, max: 200 },
+                    airgapped: { min: 200, max: 250 },
+                    topsecret: { min: 200, max: 250 }
+                };
+                
+                const dataRange = dataOverageRates[classification];
+                const dataRate = dataRange.min + (dataRange.max - dataRange.min) * positionMultiplier[pricingPosition];
+                const dataFees = overage * dataRate * 12; // Annual
+
+                // AI token fees (values now in millions of tokens)
+                const aiQuotas = { team: 1, unit: 5, command: 20, national: 50 }; // Million tokens
+                const aiQuota = aiQuotas[tier] || 0;
+                const aiOverage = Math.max(0, aiRuns - aiQuota);
+                
+                const aiRates = {
+                    unclassified: { min: 10, max: 20 }, // €10-€20 per 1M tokens
+                    restricted: { min: 30, max: 40 },   // €30-€40 per 1M tokens
+                    airgapped: { min: 40, max: 50 },    // €40-€50 per 1M tokens
+                    topsecret: { min: 40, max: 50 }     // €40-€50 per 1M tokens
+                };
+                
+                const aiRange = aiRates[classification];
+                const aiRate = aiRange.min + (aiRange.max - aiRange.min) * positionMultiplier[pricingPosition];
+                const aiFees = aiOverage * aiRate * 12; // Annual
+
+                // Support & maintenance (20% of license + cores)
+                const supportRate = 0.20;
+                const supportFees = (baseLicense + elasticCompute) * supportRate;
+
+                // Setup fee based on deployment type (fixed rates)
+                let setupRate;
+                let deploymentType;
+                
+                switch(classification) {
+                    case 'unclassified':
+                        setupRate = 0.15; // Fixed 15%
+                        deploymentType = 'Cloud - Unclassified';
+                        break;
+                    case 'restricted':
+                        setupRate = 0.25; // Fixed 25%
+                        deploymentType = 'Hybrid - Sovereign/Secure Cloud';
+                        break;
+                    case 'airgapped':
+                        setupRate = 0.40; // Fixed 40%
+                        deploymentType = 'Air-gapped - Confidential/Secret';
+                        break;
+                    case 'topsecret':
+                        setupRate = 0.50 + 0.10 * positionMultiplier[pricingPosition]; // 50%+ (custom)
+                        deploymentType = 'Custom - Top Secret/Multi-agency';
+                        break;
+                    default:
+                        setupRate = 0.25;
+                        deploymentType = 'Standard deployment';
+                }
+                
+                const setupFee = baseLicense * setupRate;
+
+                // Calculate discounts
+                let autoDiscountRate = 0;
+                if (enableAutoDiscount) {
+                    if (duration >= 60) autoDiscountRate = 0.15; // 5+ years
+                    else if (duration >= 36) autoDiscountRate = 0.10; // 3+ years
+                }
+
+                const totalDiscountRate = Math.min(0.5, (autoDiscountRate + additionalDiscount / 100));
+
+                // Annual costs
+                const annualLicense = baseLicense * (1 - totalDiscountRate);
+                const annualCompute = elasticCompute * (1 - totalDiscountRate);
+                const annualData = dataFees * (1 - totalDiscountRate);
+                const annualAI = aiFees * (1 - totalDiscountRate);
+                const annualSupport = supportFees * (1 - totalDiscountRate);
+
+                const annualCost = annualLicense + annualCompute + annualData + annualAI + annualSupport;
+                const year1Cost = annualCost + setupFee;
+                const tcv = year1Cost + (annualCost * (duration / 12 - 1));
+                const aav = tcv / (duration / 12);
+
+                // Breakdown for display
+                const breakdown = [
+                    { component: 'Base License', description: `${modules.length} modules (${modules.join(', ')})`, cost: annualLicense },
+                    { component: 'Elastic Compute', description: `${cores} cores (${classification})`, cost: annualCompute },
+                    { component: 'Data Usage', description: `${dataUsage}TB/month (${overage.toFixed(1)}TB overage)`, cost: annualData },
+                    { component: 'AI Token Usage', description: `${aiRuns}M tokens/month (${aiOverage.toFixed(1)}M overage)`, cost: annualAI },
+                    { component: 'Support & Maintenance', description: `${(supportRate * 100)}% of license + compute`, cost: annualSupport },
+                    { component: 'Setup Fee (Year 1 only)', description: `${(setupRate * 100).toFixed(1)}% - ${deploymentType}`, cost: setupFee }
+                ];
+
+                updatePricingDisplay(year1Cost, annualCost, tcv, aav, breakdown);
+
+            } catch (error) {
+                console.error('Pricing calculation error:', error);
+                showNotification('Calculation Error', 'Please check your inputs and try again.', 'warning');
+            }
+        }
+
+        // Update pricing display with European formatting
+        function updatePricingDisplay(year1, annual, tcv, aav, breakdown) {
+            const currency = document.getElementById('currency').value;
+            const vatRate = getVATRate();
+            const showVatInclusive = document.getElementById('showVatInclusive').classList.contains('active');
+
+            // Currency conversion (simplified - in production, use real-time rates)
+            const rates = { EUR: 1, USD: 1.1, GBP: 0.85 };
+            const rate = rates[currency] || 1;
+            const symbol = { EUR: '€', USD: '$', GBP: '£' }[currency] || '€';
+
+            // Apply VAT if showing inclusive
+            const vatMultiplier = showVatInclusive ? (1 + vatRate / 100) : 1;
+
+            // Update main figures with European formatting
+            document.getElementById('year1Cost').textContent = `${symbol} ${formatEuropean(year1 * rate * vatMultiplier)}`;
+            document.getElementById('annualCost').textContent = `${symbol} ${formatEuropean(annual * rate * vatMultiplier)}`;
+            document.getElementById('tcv').textContent = `${symbol} ${formatEuropean(tcv * rate * vatMultiplier)}`;
+            document.getElementById('aav').textContent = `${symbol} ${formatEuropean(aav * rate * vatMultiplier)}`;
+
+            // Update breakdown table
+            const tbody = document.getElementById('breakdownTableBody');
+            tbody.innerHTML = '';
+
+            breakdown.forEach(item => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${item.component}</td>
+                    <td>${item.description}</td>
+                    <td class="amount">${symbol} ${formatEuropean(item.cost * rate * vatMultiplier)}</td>
+                `;
+            });
+
+            // Update VAT information
+            document.getElementById('vatRate').textContent = `${vatRate}%`;
+            document.getElementById('vatAmountYear1').textContent = `${symbol} ${formatEuropean(year1 * rate * vatRate / 100)}`;
+            document.getElementById('vatAmountAnnual').textContent = `${symbol} ${formatEuropean(annual * rate * vatRate / 100)}`;
+            document.getElementById('vatAmountTotal').textContent = `${symbol} ${formatEuropean(tcv * rate * vatRate / 100)}`;
+
+            // Update VAT toggle label
+            document.getElementById('vatToggleLabel').textContent = showVatInclusive ? 'Including VAT' : 'Excluding VAT';
+        }
+
+        // Enhanced PDF generation
+        function generateQuote() {
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+
+                // Get form data
+                const clientName = document.getElementById('clientName').value || 'Prospective Client';
+                const opportunityName = document.getElementById('opportunityName').value || 'Defense AI Platform';
+                const primaryContact = document.getElementById('primaryContact').value || 'N/A';
+                const projectDescription = document.getElementById('projectDescription').value || 'AI Platform Implementation';
+                const validUntil = document.getElementById('validUntil').value || 'N/A';
+                const startDate = document.getElementById('startDate').value || 'N/A';
+                const contractDuration = document.getElementById('contractDuration').value === 'custom' ? 
+                    document.getElementById('customDuration').value : document.getElementById('contractDuration').value;
+                const region = document.getElementById('region').value;
+                const vatRate = getVATRate();
+                const showVatInclusive = document.getElementById('showVatInclusive').classList.contains('active');
+                const currency = document.getElementById('currency').value;
+
+                // Get pricing data
+                const year1Cost = document.getElementById('year1Cost').textContent;
+                const annualCost = document.getElementById('annualCost').textContent;
+                const tcv = document.getElementById('tcv').textContent;
+                const aav = document.getElementById('aav').textContent;
+
+                // Get discount information
+                const enableAutoDiscount = document.getElementById('enableAutoDiscount').classList.contains('active');
+                const additionalDiscount = parseFloat(document.getElementById('additionalDiscount').value === 'custom' ? 
+                    document.getElementById('customDiscount').value : document.getElementById('additionalDiscount').value) || 0;
+                
+                let autoDiscountRate = 0;
+                if (enableAutoDiscount && contractDuration) {
+                    if (parseInt(contractDuration) >= 60) autoDiscountRate = 15; // 5+ years
+                    else if (parseInt(contractDuration) >= 36) autoDiscountRate = 10; // 3+ years
+                }
+                
+                const totalDiscountRate = Math.min(50, (autoDiscountRate + additionalDiscount));
+
+                // Header with Praetori branding
+                doc.setFillColor(255, 107, 53);
+                doc.rect(0, 0, 210, 35, 'F');
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(28);
+                doc.setFont('helvetica', 'bold');
+                doc.text('Praetori.ai', 20, 22);
+                doc.setFontSize(12);
+                doc.text('Professional Defense AI Solutions Proposal', 20, 30);
+
+                // Proposal Information Section
+                doc.setTextColor(0, 0, 0);
+                doc.setFontSize(16);
+                doc.setFont('helvetica', 'bold');
+                doc.text('PROPOSAL INFORMATION', 20, 50);
+                
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'normal');
+                doc.text(`Client Organization: ${clientName}`, 20, 62);
+                doc.text(`Primary Contact: ${primaryContact}`, 20, 69);
+                doc.text(`Opportunity: ${opportunityName}`, 20, 76);
+                doc.text(`Proposal Date: ${new Date().toLocaleDateString('de-DE')}`, 20, 83);
+                doc.text(`Valid Until: ${new Date(validUntil).toLocaleDateString('de-DE')}`, 20, 90);
+                doc.text(`Proposed Start Date: ${new Date(startDate).toLocaleDateString('de-DE')}`, 20, 97);
+                doc.text(`Contract Duration: ${contractDuration} months`, 20, 104);
+
+                // Project Description
+                doc.setFontSize(14);
+                doc.setFont('helvetica', 'bold');
+                doc.text('PROJECT SCOPE', 20, 120);
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'normal');
+                const splitDescription = doc.splitTextToSize(projectDescription, 170);
+                doc.text(splitDescription, 20, 130);
+
+                // Executive Summary
+                doc.setFontSize(16);
+                doc.setFont('helvetica', 'bold');
+                doc.text('EXECUTIVE SUMMARY', 20, 155);
+
+                const executiveSummary = [
+                    ['Year 1 Investment', year1Cost],
+                    ['Annual Ongoing Cost', annualCost],
+                    ['Total Contract Value', tcv],
+                    ['Average Annual Value', aav]
+                ];
+
+                doc.autoTable({
+                    startY: 165,
+                    head: [['Financial Summary', `Amount (${currency})`]],
+                    body: executiveSummary,
+                    theme: 'grid',
+                    headStyles: { fillColor: [255, 107, 53], textColor: [255, 255, 255] },
+                    margin: { left: 20, right: 20 },
+                    styles: { fontSize: 10 }
+                });
+
+                // Detailed Cost Breakdown
+                const breakdownRows = [];
+                const tbody = document.getElementById('breakdownTableBody');
+                for (let row of tbody.rows) {
+                    if (row.cells.length === 3) {
+                        breakdownRows.push([
+                            row.cells[0].textContent,
+                            row.cells[1].textContent,
+                            row.cells[2].textContent
+                        ]);
+                    }
+                }
+
+                if (breakdownRows.length > 0) {
+                    doc.setFontSize(14);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text('DETAILED COST BREAKDOWN', 20, doc.lastAutoTable.finalY + 20);
+
+                    doc.autoTable({
+                        startY: doc.lastAutoTable.finalY + 30,
+                        head: [['Component', 'Description', 'Annual Cost']],
+                        body: breakdownRows,
+                        theme: 'grid',
+                        headStyles: { fillColor: [0, 206, 209], textColor: [255, 255, 255] },
+                        margin: { left: 20, right: 20 },
+                        styles: { fontSize: 9 }
+                    });
+                }
+
+                // VAT Information
+                doc.setFontSize(14);
+                doc.setFont('helvetica', 'bold');
+                doc.text('VAT INFORMATION', 20, doc.lastAutoTable.finalY + 20);
+                
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'normal');
+                const vatInfo = showVatInclusive ? 'All prices shown INCLUDE VAT' : 'All prices shown EXCLUDE VAT';
+                doc.text(`${vatInfo} (${vatRate}% VAT rate for ${region})`, 20, doc.lastAutoTable.finalY + 32);
+                
+                if (!showVatInclusive) {
+                    doc.text(`VAT Amount (Year 1): ${document.getElementById('vatAmountYear1').textContent}`, 20, doc.lastAutoTable.finalY + 40);
+                    doc.text(`VAT Amount (Annual): ${document.getElementById('vatAmountAnnual').textContent}`, 20, doc.lastAutoTable.finalY + 47);
+                    doc.text(`Total VAT (Contract): ${document.getElementById('vatAmountTotal').textContent}`, 20, doc.lastAutoTable.finalY + 54);
+                }
+
+                // Discount Information (if applicable)
+                let currentY = doc.lastAutoTable.finalY + 70;
+                if (totalDiscountRate > 0) {
+                    doc.setFontSize(14);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text('DISCOUNT INFORMATION', 20, currentY);
+                    
+                    doc.setFontSize(10);
+                    doc.setFont('helvetica', 'normal');
+                    currentY += 12;
+                    
+                    if (autoDiscountRate > 0) {
+                        doc.text(`Multi-Year Discount: ${autoDiscountRate}% (${contractDuration} month contract)`, 20, currentY);
+                        currentY += 7;
+                    }
+                    
+                    if (additionalDiscount > 0) {
+                        const discountType = document.getElementById('additionalDiscount').value;
+                        const discountLabel = discountType === 'custom' ? 'Custom Discount' : 
+                            discountType === '5' ? 'Volume/Partnership Discount' :
+                            discountType === '10' ? 'Strategic Account Discount' :
+                            discountType === '15' ? 'Competitive Response Discount' :
+                            discountType === '20' ? 'Major Commitment Discount' :
+                            discountType === '25' ? 'Strategic Partnership Discount' : 'Additional Discount';
+                        doc.text(`${discountLabel}: ${additionalDiscount}%`, 20, currentY);
+                        currentY += 7;
+                    }
+                    
+                    doc.setFont('helvetica', 'bold');
+                    doc.text(`Total Discount Applied: ${totalDiscountRate}%`, 20, currentY);
+                    currentY += 15;
+                }
+
+                // Contract Terms
+                doc.setFontSize(14);
+                doc.setFont('helvetica', 'bold');
+                doc.text('CONTRACT TERMS', 20, currentY);
+                
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'normal');
+                const paymentTerms = document.getElementById('paymentTerms').value;
+                const renewalOption = document.getElementById('renewalOption').value;
+                
+                doc.text(`Payment Terms: ${paymentTerms}`, 20, currentY + 12);
+                doc.text(`Renewal Option: ${renewalOption}`, 20, currentY + 19);
+                doc.text(`Currency: ${currency}`, 20, currentY + 26);
+                
+                currentY += 35;
+
+                // Terms & Conditions
+                doc.setFontSize(14);
+                doc.setFont('helvetica', 'bold');
+                doc.text('TERMS & CONDITIONS', 20, currentY);
+
+                doc.setFontSize(9);
+                doc.setFont('helvetica', 'normal');
+                const terms = [
+                    '• This proposal is valid until the date specified above',
+                    '• All prices are subject to the VAT rate applicable in the deployment region',
+                    '• Implementation timeline subject to security clearance and accreditation requirements',
+                    '• Support and maintenance included as specified in the breakdown',
+                    '• European data sovereignty and GDPR compliance included',
+                    '• Professional services and training included in setup fee'
+                ];
+                
+                let yPos = currentY + 10;
+                terms.forEach(term => {
+                    doc.text(term, 20, yPos);
+                    yPos += 7;
+                });
+
+                // Footer
+                const pageHeight = doc.internal.pageSize.height;
+                doc.setFontSize(8);
+                doc.setTextColor(128, 128, 128);
+                doc.text('Praetori.ai - Professional Defense AI Solutions', 20, pageHeight - 20);
+                doc.text('This proposal is confidential and proprietary. Europa Unita Invicta.', 20, pageHeight - 15);
+                doc.text(`Generated: ${new Date().toLocaleString('de-DE')}`, 20, pageHeight - 10);
+
+                // Save the PDF
+                const fileName = `Praetori-Proposal-${clientName.replace(/[^a-zA-Z0-9]/g, '-')}-${Date.now()}.pdf`;
+                doc.save(fileName);
+
+                showNotification('Professional Proposal Generated', 'Complete PDF proposal with all required elements has been downloaded.', 'success');
+
+            } catch (error) {
+                console.error('PDF generation error:', error);
+                showNotification('PDF Error', 'Failed to generate PDF. Please try again.', 'warning');
+            }
+        }
+
+        // Save quote data
+        function saveQuote() {
+            try {
+                const quoteData = {
+                    timestamp: new Date().toISOString(),
+                    client: {
+                        name: document.getElementById('clientName').value,
+                        contact: document.getElementById('primaryContact').value,
+                        opportunity: document.getElementById('opportunityName').value,
+                        region: document.getElementById('region').value,
+                        description: document.getElementById('projectDescription').value
+                    },
+                    configuration: {
+                        tier: document.getElementById('tier').value,
+                        modules: ['praevis', 'pensa', 'procura', 'praetorium', 'parabellum']
+                            .filter(m => document.getElementById(m).checked),
+                        cores: document.getElementById('cores').value === 'custom' ? 
+                            document.getElementById('customCores').value : document.getElementById('cores').value,
+                        classification: document.getElementById('classification').value,
+                        dataUsage: document.getElementById('dataUsage').value === 'custom' ? 
+                            document.getElementById('customData').value : document.getElementById('dataUsage').value,
+                        aiRuns: document.getElementById('aiRuns').value === 'custom' ? 
+                            document.getElementById('customAi').value : document.getElementById('aiRuns').value,
+                        pricingPosition: document.getElementById('pricingPosition').value
+                    },
+                    contract: {
+                        duration: document.getElementById('contractDuration').value === 'custom' ? 
+                            document.getElementById('customDuration').value : document.getElementById('contractDuration').value,
+                        startDate: document.getElementById('startDate').value,
+                        validUntil: document.getElementById('validUntil').value,
+                        paymentTerms: document.getElementById('paymentTerms').value,
+                        renewalOption: document.getElementById('renewalOption').value,
+                        currency: document.getElementById('currency').value,
+                        additionalDiscount: document.getElementById('additionalDiscount').value === 'custom' ? 
+                            document.getElementById('customDiscount').value : document.getElementById('additionalDiscount').value
+                    },
+                    pricing: {
+                        year1Cost: document.getElementById('year1Cost').textContent,
+                        annualCost: document.getElementById('annualCost').textContent,
+                        tcv: document.getElementById('tcv').textContent,
+                        aav: document.getElementById('aav').textContent,
+                        vatRate: getVATRate(),
+                        showVatInclusive: document.getElementById('showVatInclusive').classList.contains('active')
+                    }
+                };
+
+                const dataStr = JSON.stringify(quoteData, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(dataBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `Praetori-Quote-Data-${Date.now()}.json`;
+                link.click();
+                URL.revokeObjectURL(url);
+
+                showNotification('Quote Data Saved', 'Quote data has been exported for CRM integration.', 'success');
+
+            } catch (error) {
+                console.error('Save error:', error);
+                showNotification('Save Error', 'Failed to save quote data. Please try again.', 'warning');
+            }
+        }
+
+        // Initialize everything when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initVideoBackground();
+            setupToggles();
+            setupCustomFields();
+            setupAutoFill();
+
+            // Set default dates
+            const today = new Date();
+            const validUntil = new Date(today.getTime() + (90 * 24 * 60 * 60 * 1000)); // 90 days from now
+            
+            document.getElementById('startDate').value = today.toISOString().split('T')[0];
+            document.getElementById('validUntil').value = validUntil.toISOString().split('T')[0];
+
+            // Add event listeners for real-time calculation
+            const formElements = document.querySelectorAll('input, select, textarea');
+            formElements.forEach(element => {
+                element.addEventListener('change', calculatePricing);
+                element.addEventListener('input', calculatePricing);
+            });
+
+            // Add event listeners for checkboxes
+            ['praevis', 'pensa', 'procura', 'praetorium', 'parabellum'].forEach(module => {
+                document.getElementById(module).addEventListener('change', calculatePricing);
+            });
+
+            // Initial calculation
+            calculatePricing();
+        });
+    </script>
+</body>
+</html>
