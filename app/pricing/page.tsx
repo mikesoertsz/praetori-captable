@@ -30,7 +30,8 @@ import {
 import { Badge } from "@/app/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription } from "@/app/components/ui/alert";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { generateProfessionalPDF } from "@/app/lib/pdf-generator";
 
 export default function Pricing() {
   const {
@@ -49,6 +50,46 @@ export default function Pricing() {
   } = usePricingCalculator();
 
   const [activeStep, setActiveStep] = useState(1);
+
+  // Trigger calculation when reaching step 5
+  useEffect(() => {
+    if (activeStep === 5) {
+      calculate();
+    }
+  }, [activeStep, calculate]);
+
+  // Navigation functions
+  const goToNextStep = () => {
+    if (activeStep < steps.length) {
+      setActiveStep(activeStep + 1);
+    }
+  };
+
+  const goToPreviousStep = () => {
+    if (activeStep > 1) {
+      setActiveStep(activeStep - 1);
+    }
+  };
+
+  // PDF download function
+  const handleDownloadPDF = async () => {
+    if (!result) return;
+
+    const pdfData = {
+      client: formData.client,
+      configuration: {
+        ...formData.license,
+        ...formData.infrastructure,
+      },
+      contract: formData.contract,
+      pricing: result,
+      vat,
+      discount,
+      generatedAt: new Date().toISOString(),
+    };
+
+    await generateProfessionalPDF(pdfData);
+  };
 
   const steps = [
     {
@@ -103,7 +144,7 @@ export default function Pricing() {
     { value: "high", label: "High (Premium)" },
   ];
 
-  const cpuCores = ["16", "32", "64", "128", "256", "512", "1024"];
+  const cpuCores = ["16", "32", "64", "128", "256", "512", "1024", "custom"];
 
   const classifications = [
     { value: "unclassified", label: "Cloud - Unclassified (15% setup)" },
@@ -121,9 +162,9 @@ export default function Pricing() {
     },
   ];
 
-  const dataUsages = ["1", "2", "5", "10", "15", "25", "50", "100"];
+  const dataUsages = ["1", "2", "5", "10", "15", "25", "50", "100", "custom"];
 
-  const aiTokenUsages = ["0.5", "1", "5", "10", "20", "50", "100"];
+  const aiTokenUsages = ["0.5", "1", "5", "10", "20", "50", "100", "custom"];
 
   const contractDurations = ["12", "18", "24", "36", "48", "60"];
 
@@ -164,8 +205,8 @@ export default function Pricing() {
       </div>
 
       {/* Main Content */}
-      <div className="mx-auto px-6 py-8 bg-white flex items-center justify-center w-full h-full">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-12 max-w-7xl">
+      <div className="mx-auto px-6 py-8 bg-white w-full min-h-screen">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-12 max-w-7xl mx-auto">
           {/* Sidebar - Stepper */}
           <div className="lg:col-span-1">
             <div className="sticky top-8">
@@ -286,6 +327,16 @@ export default function Pricing() {
                     />
                   </div>
                 </CardContent>
+                <div className="flex justify-between mt-6">
+                  <Button
+                    variant="outline"
+                    onClick={goToPreviousStep}
+                    disabled={activeStep <= 1}
+                  >
+                    Previous
+                  </Button>
+                  <Button onClick={goToNextStep}>Next</Button>
+                </div>
               </Card>
             )}
 
@@ -383,6 +434,16 @@ export default function Pricing() {
                     )}
                   </div>
                 </CardContent>
+                <div className="flex justify-between mt-6">
+                  <Button
+                    variant="outline"
+                    onClick={goToPreviousStep}
+                    disabled={activeStep <= 1}
+                  >
+                    Previous
+                  </Button>
+                  <Button onClick={goToNextStep}>Next</Button>
+                </div>
               </Card>
             )}
 
@@ -402,9 +463,13 @@ export default function Pricing() {
                       <Label htmlFor="cores">CPU Cores</Label>
                       <Select
                         value={formData.infrastructure.cores.toString()}
-                        onValueChange={(value) =>
-                          updateInfrastructure({ cores: parseInt(value) })
-                        }
+                        onValueChange={(value) => {
+                          if (value === "custom") {
+                            updateInfrastructure({ cores: 0 });
+                          } else {
+                            updateInfrastructure({ cores: parseInt(value) });
+                          }
+                        }}
                       >
                         <SelectTrigger className="bg-white">
                           <SelectValue placeholder="Select CPU Cores" />
@@ -412,11 +477,27 @@ export default function Pricing() {
                         <SelectContent>
                           {cpuCores.map((value) => (
                             <SelectItem key={value} value={value}>
-                              {value} cores
+                              {value === "custom" ? "Custom" : `${value} cores`}
                             </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
+                      {formData.infrastructure.cores === 0 && (
+                        <Input
+                          type="number"
+                          placeholder="Enter custom CPU cores"
+                          value={formData.infrastructure.customCores || ""}
+                          onChange={(e) =>
+                            updateInfrastructure({
+                              customCores: parseInt(e.target.value) || 0,
+                              cores: parseInt(e.target.value) || 0,
+                            })
+                          }
+                          className="bg-white"
+                          min="1"
+                          step="1"
+                        />
+                      )}
                       {errors.cores && (
                         <Alert variant="destructive">
                           <AlertDescription>{errors.cores}</AlertDescription>
@@ -458,9 +539,15 @@ export default function Pricing() {
                       <Label htmlFor="dataUsage">Monthly Data Usage (TB)</Label>
                       <Select
                         value={formData.infrastructure.dataUsage.toString()}
-                        onValueChange={(value) =>
-                          updateInfrastructure({ dataUsage: parseFloat(value) })
-                        }
+                        onValueChange={(value) => {
+                          if (value === "custom") {
+                            updateInfrastructure({ dataUsage: 0 });
+                          } else {
+                            updateInfrastructure({
+                              dataUsage: parseFloat(value),
+                            });
+                          }
+                        }}
                       >
                         <SelectTrigger className="bg-white">
                           <SelectValue placeholder="Select Data Usage" />
@@ -468,11 +555,29 @@ export default function Pricing() {
                         <SelectContent>
                           {dataUsages.map((value) => (
                             <SelectItem key={value} value={value}>
-                              {value} TB/month
+                              {value === "custom"
+                                ? "Custom"
+                                : `${value} TB/month`}
                             </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
+                      {formData.infrastructure.dataUsage === 0 && (
+                        <Input
+                          type="number"
+                          placeholder="Enter custom data usage (TB)"
+                          value={formData.infrastructure.customData || ""}
+                          onChange={(e) =>
+                            updateInfrastructure({
+                              customData: parseFloat(e.target.value) || 0,
+                              dataUsage: parseFloat(e.target.value) || 0,
+                            })
+                          }
+                          className="bg-white"
+                          min="0.1"
+                          step="0.1"
+                        />
+                      )}
                     </div>
 
                     <div className="space-y-2">
@@ -481,9 +586,13 @@ export default function Pricing() {
                       </Label>
                       <Select
                         value={formData.infrastructure.aiRuns.toString()}
-                        onValueChange={(value) =>
-                          updateInfrastructure({ aiRuns: parseFloat(value) })
-                        }
+                        onValueChange={(value) => {
+                          if (value === "custom") {
+                            updateInfrastructure({ aiRuns: 0 });
+                          } else {
+                            updateInfrastructure({ aiRuns: parseFloat(value) });
+                          }
+                        }}
                       >
                         <SelectTrigger className="bg-white">
                           <SelectValue placeholder="Select Token Usage" />
@@ -491,14 +600,42 @@ export default function Pricing() {
                         <SelectContent>
                           {aiTokenUsages.map((value) => (
                             <SelectItem key={value} value={value}>
-                              {value}M tokens/month
+                              {value === "custom"
+                                ? "Custom"
+                                : `${value}M tokens/month`}
                             </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
+                      {formData.infrastructure.aiRuns === 0 && (
+                        <Input
+                          type="number"
+                          placeholder="Enter custom AI token usage (millions)"
+                          value={formData.infrastructure.customAi || ""}
+                          onChange={(e) =>
+                            updateInfrastructure({
+                              customAi: parseFloat(e.target.value) || 0,
+                              aiRuns: parseFloat(e.target.value) || 0,
+                            })
+                          }
+                          className="bg-white"
+                          min="0.1"
+                          step="0.1"
+                        />
+                      )}
                     </div>
                   </div>
                 </CardContent>
+                <div className="flex justify-between mt-6">
+                  <Button
+                    variant="outline"
+                    onClick={goToPreviousStep}
+                    disabled={activeStep <= 1}
+                  >
+                    Previous
+                  </Button>
+                  <Button onClick={goToNextStep}>Next</Button>
+                </div>
               </Card>
             )}
 
@@ -615,7 +752,60 @@ export default function Pricing() {
                       )}
                     </div>
                   </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="enableAutoDiscount">Auto Discount</Label>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id="enableAutoDiscount"
+                          checked={formData.contract.enableAutoDiscount}
+                          onCheckedChange={(checked) =>
+                            updateContract({ enableAutoDiscount: !!checked })
+                          }
+                          className="bg-white"
+                        />
+                        <Label htmlFor="enableAutoDiscount" className="text-sm">
+                          Enable automatic discounts for long-term contracts
+                        </Label>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="additionalDiscount">
+                        Manual Discount (%)
+                      </Label>
+                      <Input
+                        id="additionalDiscount"
+                        type="number"
+                        value={formData.contract.additionalDiscount}
+                        onChange={(e) =>
+                          updateContract({
+                            additionalDiscount: Math.max(
+                              0,
+                              Math.min(50, parseFloat(e.target.value) || 0)
+                            ),
+                          })
+                        }
+                        className="bg-white"
+                        min="0"
+                        max="50"
+                        step="0.1"
+                        placeholder="0"
+                      />
+                    </div>
+                  </div>
                 </CardContent>
+                <div className="flex justify-between mt-6">
+                  <Button
+                    variant="outline"
+                    onClick={goToPreviousStep}
+                    disabled={activeStep <= 1}
+                  >
+                    Previous
+                  </Button>
+                  <Button onClick={goToNextStep}>Next</Button>
+                </div>
               </Card>
             )}
 
@@ -736,12 +926,145 @@ export default function Pricing() {
 
                       <Separator />
 
+                      {/* Explanation Section */}
+                      <div className="space-y-4">
+                        <h3 className="text-lg font-semibold">
+                          Pricing Explanation
+                        </h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <Card>
+                            <CardHeader className="pb-2">
+                              <CardTitle className="text-sm font-medium">
+                                Year 1 Investment
+                              </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                              <p className="text-sm text-muted-foreground">
+                                Includes one-time setup fees, first year
+                                licensing, and infrastructure costs. Higher
+                                security classifications require additional
+                                setup investment.
+                              </p>
+                            </CardContent>
+                          </Card>
+                          <Card>
+                            <CardHeader className="pb-2">
+                              <CardTitle className="text-sm font-medium">
+                                Annual Ongoing
+                              </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                              <p className="text-sm text-muted-foreground">
+                                Recurring annual costs for licensing,
+                                infrastructure, and support. Scales with your
+                                usage and security requirements.
+                              </p>
+                            </CardContent>
+                          </Card>
+                          <Card>
+                            <CardHeader className="pb-2">
+                              <CardTitle className="text-sm font-medium">
+                                Total Contract Value
+                              </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                              <p className="text-sm text-muted-foreground">
+                                Complete contract value over the entire
+                                duration. Includes all setup, licensing, and
+                                infrastructure costs.
+                              </p>
+                            </CardContent>
+                          </Card>
+                          <Card>
+                            <CardHeader className="pb-2">
+                              <CardTitle className="text-sm font-medium">
+                                Average Annual Value
+                              </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                              <p className="text-sm text-muted-foreground">
+                                TCV divided by contract duration in years.
+                                Useful for budgeting and comparison purposes.
+                              </p>
+                            </CardContent>
+                          </Card>
+                        </div>
+                      </div>
+
+                      <Separator />
+
+                      {/* Toolkit Info Section */}
+                      <div className="space-y-4">
+                        <h3 className="text-lg font-semibold">
+                          Pricing Toolkit
+                        </h3>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <Card>
+                            <CardHeader className="pb-2">
+                              <CardTitle className="text-sm font-medium">
+                                Security Classification Impact
+                              </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                              <ul className="text-sm text-muted-foreground space-y-1">
+                                <li>• Unclassified: +15% setup</li>
+                                <li>• Restricted: +25% setup</li>
+                                <li>• Air-gapped: +40% setup</li>
+                                <li>• Top Secret: +50%+ setup</li>
+                              </ul>
+                            </CardContent>
+                          </Card>
+                          <Card>
+                            <CardHeader className="pb-2">
+                              <CardTitle className="text-sm font-medium">
+                                Contract Duration Benefits
+                              </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                              <ul className="text-sm text-muted-foreground space-y-1">
+                                <li>• 3+ years: 5% discount</li>
+                                <li>• 5+ years: 10% discount</li>
+                                <li>• Manual discounts: Up to 50%</li>
+                                <li>• Combined: Maximum 50% total</li>
+                              </ul>
+                            </CardContent>
+                          </Card>
+                          <Card>
+                            <CardHeader className="pb-2">
+                              <CardTitle className="text-sm font-medium">
+                                Module Pricing
+                              </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                              <ul className="text-sm text-muted-foreground space-y-1">
+                                <li>• Base tier pricing included</li>
+                                <li>• Additional modules: +20-50%</li>
+                                <li>• Bundle discounts available</li>
+                                <li>• Custom configurations supported</li>
+                              </ul>
+                            </CardContent>
+                          </Card>
+                        </div>
+                      </div>
+
+                      <Separator />
+
                       <div className="flex gap-4">
                         <Button className="flex-1">
                           Generate Professional Proposal
                         </Button>
                         <Button variant="outline" className="flex-1">
                           Save Quote Data
+                        </Button>
+                      </div>
+
+                      {/* PDF Download Button - Bottom Right */}
+                      <div className="flex justify-end mt-6">
+                        <Button
+                          onClick={handleDownloadPDF}
+                          className="bg-blue-600 hover:bg-blue-700 text-white"
+                        >
+                          Download Pricing Report (PDF)
                         </Button>
                       </div>
                     </>
@@ -753,6 +1076,18 @@ export default function Pricing() {
                     </div>
                   )}
                 </CardContent>
+                <div className="flex justify-between mt-6">
+                  <Button
+                    variant="outline"
+                    onClick={goToPreviousStep}
+                    disabled={activeStep <= 1}
+                  >
+                    Previous
+                  </Button>
+                  <div className="text-sm text-muted-foreground flex items-center">
+                    Step {activeStep} of {steps.length}
+                  </div>
+                </div>
               </Card>
             )}
           </div>

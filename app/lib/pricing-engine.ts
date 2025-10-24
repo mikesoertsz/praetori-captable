@@ -175,12 +175,25 @@ export function calculatePricing(formData: PricingFormData): PricingResult {
     },
   ];
 
+  // Apply currency conversion
+  const currencyRate = CURRENCY_RATES[contract.currency] || 1;
+  const convertedYear1Cost = year1Cost * currencyRate;
+  const convertedAnnualCost = annualCost * currencyRate;
+  const convertedTcv = tcv * currencyRate;
+  const convertedAav = aav * currencyRate;
+
+  // Convert breakdown costs
+  const convertedBreakdown = breakdown.map((item) => ({
+    ...item,
+    cost: item.cost * currencyRate,
+  }));
+
   return {
-    year1Cost,
-    annualCost,
-    tcv,
-    aav,
-    breakdown,
+    year1Cost: convertedYear1Cost,
+    annualCost: convertedAnnualCost,
+    tcv: convertedTcv,
+    aav: convertedAav,
+    breakdown: convertedBreakdown,
   };
 }
 

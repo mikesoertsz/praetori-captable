@@ -90,8 +90,8 @@ export const useFundingStore = create<FundingStore>((set, get) => ({
           );
           updatedRound = { ...updatedRound, capTable: normalizedCapTable };
         } else if (field === "amountRaised" && typeof value === "number") {
-          // When amount raised changes, recalculate pre-money valuation
-          const percentageSold = updatedRound.capTable.investors;
+          // When amount raised changes, recalculate pre-money valuation based on target dilution
+          const percentageSold = updatedRound.targetDilution;
           const newPreMoney = calculatePreMoneyFromPercentage(
             value,
             percentageSold
@@ -102,19 +102,26 @@ export const useFundingStore = create<FundingStore>((set, get) => ({
             preMoneyValuation: Math.round(newPreMoney),
           };
         } else if (field === "preMoneyValuation" && typeof value === "number") {
-          // When pre-money valuation changes, recalculate percentage sold
+          // When pre-money valuation changes, recalculate target dilution
           const newPercentage = calculatePercentageFromPreMoney(
             updatedRound.amountRaised,
             value
           );
-          const normalizedCapTable = normalizeCapTable({
-            ...updatedRound.capTable,
-            investors: newPercentage,
-          });
           updatedRound = {
             ...updatedRound,
             preMoneyValuation: value,
-            capTable: normalizedCapTable,
+            targetDilution: newPercentage,
+          };
+        } else if (field === "targetDilution" && typeof value === "number") {
+          // When target dilution changes, recalculate pre-money valuation
+          const newPreMoney = calculatePreMoneyFromPercentage(
+            updatedRound.amountRaised,
+            value
+          );
+          updatedRound = {
+            ...updatedRound,
+            targetDilution: value,
+            preMoneyValuation: Math.round(newPreMoney),
           };
         } else {
           // Direct field update

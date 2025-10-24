@@ -61,16 +61,32 @@ export default function RoundInputs() {
               type="number"
               value={selectedRound.amountRaised / 1000000}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                const inputValue = e.target.value;
+                // Handle empty input or invalid values
+                if (
+                  inputValue === "" ||
+                  inputValue === "0" ||
+                  inputValue === "01"
+                ) {
+                  updateRound(selectedRoundId, "amountRaised", 0);
+                  return;
+                }
+
                 const amountInMillions = Math.max(
-                  parseFloat(e.target.value) || 0,
+                  parseFloat(inputValue) || 0,
                   0
                 );
                 const amountRaised = Math.round(amountInMillions * 1000000);
                 updateRound(selectedRoundId, "amountRaised", amountRaised);
               }}
+              onBlur={(e: React.FocusEvent<HTMLInputElement>) => {
+                // Ensure proper formatting on blur
+                const value = parseFloat(e.target.value) || 0;
+                e.target.value = value.toString();
+              }}
               className="h-8 bg-white pl-8"
               min="0"
-              step="1"
+              step="0.1"
               placeholder="0"
             />
             <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">

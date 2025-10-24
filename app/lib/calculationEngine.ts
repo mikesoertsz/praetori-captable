@@ -4,24 +4,85 @@ export function calculateRoundMetrics(round: FundingRound): FundingRound {
   // Calculate post-money valuation
   const postMoneyValuation = round.preMoneyValuation + round.amountRaised;
 
-  // Preserve provided cap table and target dilution from data to reflect scenario inputs
-  const providedInvestors = round.capTable?.investors ?? 0;
-  const providedFounders = round.capTable?.founders ?? 0;
-  const providedOptionPool = round.capTable?.optionPool ?? round.optionPoolSize;
+  // Calculate investor ownership based on amount raised and post-money valuation
+  const newInvestorOwnership = (round.amountRaised / postMoneyValuation) * 100;
 
-  // Normalize to ensure totals equal 100%
-  const totalProvided =
-    providedFounders + providedInvestors + providedOptionPool;
-  const scale = totalProvided > 0 ? 100 / totalProvided : 1;
+  // Handle option pool refresh logic
+  let optionPoolSize = round.optionPoolSize;
+  let foundersOwnership: number;
+  let investorsOwnership: number;
+
+  if (round.optionPoolRefresh === "pre-money") {
+    // Option pool is created before new investment, diluting existing shareholders
+    const preOptionPoolFounders = round.capTable?.founders ?? 100;
+    const preOptionPoolInvestors = round.capTable?.investors ?? 0;
+
+    // Calculate ownership after option pool creation
+    const totalPreOptionPool = preOptionPoolFounders + preOptionPoolInvestors;
+    const foundersAfterOptionPool =
+      (preOptionPoolFounders / totalPreOptionPool) * (100 - optionPoolSize);
+    const investorsAfterOptionPool =
+      (preOptionPoolInvestors / totalPreOptionPool) * (100 - optionPoolSize);
+
+    // Then apply new investor dilution
+    const remainingAfterNewInvestor =
+      100 - newInvestorOwnership - optionPoolSize;
+    foundersOwnership =
+      (foundersAfterOptionPool /
+        (foundersAfterOptionPool + investorsAfterOptionPool)) *
+      remainingAfterNewInvestor;
+    investorsOwnership =
+      newInvestorOwnership +
+      (investorsAfterOptionPool /
+        (foundersAfterOptionPool + investorsAfterOptionPool)) *
+        remainingAfterNewInvestor;
+  } else {
+    // Post-money option pool (default) - option pool is created after new investment
+    const remainingForFoundersAndExistingInvestors =
+      100 - newInvestorOwnership - optionPoolSize;
+
+    // Distribute remaining ownership proportionally between founders and existing investors
+    const existingFounders = round.capTable?.founders ?? 100;
+    const existingInvestors = round.capTable?.investors ?? 0;
+    const totalExisting = existingFounders + existingInvestors;
+
+    if (totalExisting > 0) {
+      foundersOwnership =
+        (existingFounders / totalExisting) *
+        remainingForFoundersAndExistingInvestors;
+      investorsOwnership =
+        newInvestorOwnership +
+        (existingInvestors / totalExisting) *
+          remainingForFoundersAndExistingInvestors;
+    } else {
+      foundersOwnership = remainingForFoundersAndExistingInvestors;
+      investorsOwnership = newInvestorOwnership;
+    }
+  }
+
+  // Ensure we don't have negative values
+  foundersOwnership = Math.max(0, foundersOwnership);
+  investorsOwnership = Math.max(0, investorsOwnership);
+  optionPoolSize = Math.max(0, optionPoolSize);
+
+  // Normalize to ensure total equals 100%
+  const total = foundersOwnership + investorsOwnership + optionPoolSize;
+  if (total > 0) {
+    const scale = 100 / total;
+    foundersOwnership = Math.round(foundersOwnership * scale * 10) / 10;
+    investorsOwnership = Math.round(investorsOwnership * scale * 10) / 10;
+    optionPoolSize = Math.round(optionPoolSize * scale * 10) / 10;
+  }
 
   const finalCapTable: CapTable = {
-    founders: Math.max(0, providedFounders * scale),
-    investors: Math.max(0, providedInvestors * scale),
-    optionPool: Math.max(0, providedOptionPool * scale),
+    founders: foundersOwnership,
+    investors: investorsOwnership,
+    optionPool: optionPoolSize,
     investorGroups: round.capTable?.investorGroups || [],
   };
 
-  const targetDilution = round.targetDilution ?? finalCapTable.investors;
+  // Use the calculated new investor ownership as target dilution
+  const targetDilution = newInvestorOwnership;
 
   return {
     ...round,
